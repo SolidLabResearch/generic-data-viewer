@@ -1,0 +1,8 @@
+
+
+.selection-table{
+    display: inline;
+    height: calc(100% - 40px);
+    width: 20%;
+    margin-right: 0;
+}

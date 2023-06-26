@@ -1,0 +1,36 @@
+.App{
+    width: 100vw;
+    height: 100vh;
+}
+
+.app-title{
+    height: 5%;
+}
+
+.app-body{
+    width: 100%;
+    height: 85%;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+
+}
+
+*{
+    border-color: red;
+    border: 2px solid red;
+}
+
+.app-body *{
+    margin: 20px;
+}
+
+footer{
+    height: 10vh;
+}
+
+.right-field{
+    display: inline-block;
+    width: 80%;
+    height: calc(100% - 40px);
+}
