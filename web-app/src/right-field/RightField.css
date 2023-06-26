@@ -1,7 +1,7 @@
 .right-field{
     box-sizing: border-box;
     display: inline-block;
-    width: 80%;
+    width: calc(80% - 60px);
     height: calc(100% - 40px);
     background-color: lightgray;
 }

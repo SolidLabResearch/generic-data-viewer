@@ -29,3 +29,7 @@
     margin: 0;
     padding: 0;
 }
+
+.querry-entry h3{
+    user-select: none;
+}
