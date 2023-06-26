@@ -7,3 +7,14 @@
     margin-right: 0;
     background-color: lightgray;
 }
+
+#querries-title{
+    display: flex;
+    align-items: center;
+    height: 5%;
+}
+
+.selection-table-box{
+    margin-top: 0;
+    height: calc(95% - 60px );
+}

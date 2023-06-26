@@ -1,4 +1,7 @@
 
 .results-table{
-    display: inline;
+    display: inline-block;
+    margin-top: 0;
+    height: calc(95% - 60px);
+    width: calc(100% - 40px);
 }
