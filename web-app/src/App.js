@@ -1,4 +1,4 @@
-import ResultsTable from "./results_table/ResultsTable";
+import ResultsTable from "./results-table/ResultsTable";
 
 function App() {
   return (
