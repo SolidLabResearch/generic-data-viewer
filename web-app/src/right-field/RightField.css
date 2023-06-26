@@ -1,0 +1,23 @@
+.right-field{
+    display: inline-block;
+    width: 80%;
+    height: calc(100% - 40px);
+    background-color: lightgray;
+}
+
+.control-section{
+    height: 5%;
+}
+
+button{
+    height: 50%;
+    width: 4%;
+}
+
+#refresh-button{
+    float: inline-start;
+}
+
+#login-button{
+    float: inline-end;
+}

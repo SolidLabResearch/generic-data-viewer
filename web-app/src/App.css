@@ -1,6 +1,6 @@
 .App{
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: 100%;
 }
 
 .app-title{
@@ -17,7 +17,6 @@
 }
 
 *{
-    border-color: red;
     border: 2px solid red;
 }
 
@@ -26,11 +25,7 @@
 }
 
 footer{
-    height: 10vh;
+    align-content: center;
+    text-align: center;
 }
 
-.right-field{
-    display: inline-block;
-    width: 80%;
-    height: calc(100% - 40px);
-}

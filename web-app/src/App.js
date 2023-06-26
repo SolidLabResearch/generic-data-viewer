@@ -1,6 +1,6 @@
-import ResultsTable from "./results-table/ResultsTable";
 import "./App.css"
 import SelectionTable from "./selection-table/SelectionTable";
+import RightField from "./right-field/RightField";
 
 function App() {
   return (
@@ -8,13 +8,10 @@ function App() {
       <h1 className="app-title">Generic Data Viewer</h1>
       <div className="app-body">
         <SelectionTable />
-        <div className="right-field">
-          <ResultsTable/>
-        </div>
+        <RightField />
       </div>
-      <footer>
-        
-      </footer>
+      <footer><p><a href="https://idlab.technology/">IDLab</a> - <a href="https://www.imec.be/nl">imec</a> - <a href="https://www.ugent.be/">UGent</a></p></footer>
+
     </div>
   );
 }
