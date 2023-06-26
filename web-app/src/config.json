@@ -1,0 +1,13 @@
+{
+    "title": "Generic Data Viewer",
+    "querry_folder": "querries",
+    "querries": [
+        {
+            "querry_location": "test.ttl",
+            "name": "Test Querry",
+            "description": "A simple Test querry",
+            "id": "123",
+            "sources": ["http://dbpedia.org"]
+        }
+    ]
+}

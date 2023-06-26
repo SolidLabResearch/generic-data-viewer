@@ -18,3 +18,14 @@
     margin-top: 0;
     height: calc(95% - 60px );
 }
+
+#querry-list{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.querry-entry{
+    margin: 0;
+    padding: 0;
+}
