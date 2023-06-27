@@ -14,7 +14,7 @@ function ExtendableSelector({onClick, extendContent, children}){
                      {children}
                      <div onClick={(e) => {switchExtended(); e.target.classList.toggle('down')}} className="arrow"/>
                 </div>
-                <p>{extended && extendContent}</p>
+                <p className="extended-content">{extended && extendContent}</p>
 
             </li>
         </>

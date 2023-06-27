@@ -81,4 +81,8 @@
 .arrow:hover{
     cursor: pointer;
 }
-  
+
+
+.extended-content{
+    margin-left: 4%;
+}
