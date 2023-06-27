@@ -10,7 +10,7 @@ function SelectionTable(props){
                 <ul id="querry-list">
                     {querries.map((element, index) => (
                         <li key={index} onClick={() => onSelected(element)} className="querry-entry">
-                            <h3 >{element.name}</h3>
+                            <h3>{element.name}</h3>
                         </li>
                     ))}
                 </ul>

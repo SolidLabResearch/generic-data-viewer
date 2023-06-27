@@ -27,14 +27,14 @@ function ResultsTable(props){
             setResults([])
             executeQuerry(selectedQuerry, adder, setVariables)
         }
-    }, [selectedQuerry])
+    }, [selectedQuerry, props.clicks])
 
 
     return(
         <div className="results-table">
             {!selectedQuerry && <label>Please select a querry.</label>}
             {selectedQuerry && 
-            <Grid style={{td: {"text-align": "center", "height": "10px"}, th: {"text-align": "center"}}} 
+            <Grid style={{td: {"text-align": "center"}, th: {"text-align": "center"}}} 
             data={results} 
             fixedHeader={true}
             height={"100%"}
