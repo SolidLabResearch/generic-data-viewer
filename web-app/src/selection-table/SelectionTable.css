@@ -47,8 +47,13 @@
     display: inline-block;
 }
 
-.querry-entry h3{
+.querry-entry .querry-selector{
     user-select: none;
+}
+
+.querry-entry .querry-selector:hover{
+    user-select: none;
+    cursor: pointer;
 }
 
 .arrow {
@@ -72,4 +77,8 @@
     transform: rotate(90deg);
     transition: transform .25s;
   }
+
+.arrow:hover{
+    cursor: pointer;
+}
   
