@@ -16,8 +16,8 @@
     transform: translate(-50%, -50%);
 }
 
-ul{
-    overflow:hidden; 
-    overflow-y:scroll;
-    height: calc(100% - 40px);
+.results-table *{
+    margin: 0;
+    overflow: hidden;
+    height: calc(100% - 1px);
 }

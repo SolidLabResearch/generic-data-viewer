@@ -1,9 +1,9 @@
 import "./ResultsTable.css"
 
 import config from "../../config.json"
-import { useEffect, useRef, useState } from "react";
-import { Grid } from "gridjs-react";
-
+import { useEffect, useState } from "react";
+import { Grid } from 'gridjs-react';
+import "gridjs/dist/theme/mermaid.min.css";
 config = JSON.parse(JSON.stringify(config))
 
 if(!config.querry_folder){
@@ -20,17 +20,12 @@ const myEngine = new QueryEngine()
 function ResultsTable(props){
     const selectedQuerry = props.selectedQuerry
     const [results, setResults] = useState([])
-    const wrapperRef = useRef(undefined)
+    const [variables, setVariables] = useState([])
     let adder = (item) => setResults((old) => {return [...old, item]})
-
-    useEffect(() => {
-        const grid = new Grid()
-    }).render(wrapperRef.current)
-
     useEffect(() => {
         if(selectedQuerry){
             setResults([])
-            executeQuerry(selectedQuerry, adder)
+            executeQuerry(selectedQuerry, adder, setVariables)
         }
     }, [selectedQuerry])
 
@@ -38,32 +33,46 @@ function ResultsTable(props){
     return(
         <div className="results-table">
             {!selectedQuerry && <label>Please select a querry.</label>}
-            <div ref={wrapperRef}></div>
+            {selectedQuerry && 
+            <Grid style={{td: {"text-align": "center", "height": "10px"}, th: {"text-align": "center"}}} 
+            data={results} 
+            fixedHeader={true}
+            height={"100%"}
+            autoWidth="true" columns={variables}/>
+            }
         </div>
     )
 }
 
-function executeQuerry(querry, adder){
-    console.log(`${config.querry_folder}${querry.querry_location}`)
+function executeQuerry(querry, adder, variableSetter){
     return fetch(`${config.querry_folder}${querry.querry_location}`).then(result => {
       result.text().then(q => {
-        console.log(q)
         const execution = myEngine.queryBindings(
           q,
           {sources:querry.sources}
         )
-        handleQuerryExecution(execution, adder)
+        handleQuerryExecution(execution, adder, variableSetter)
       })
       
     })
    
   }
   
-  function handleQuerryExecution(execution, adder){
+  function handleQuerryExecution(execution, adder, variableSetter){
     execution.then(bindingStream => {
+      console.log(bindingStream)
       bindingStream.on('data', (binding) => {
-        console.log(binding.toString())
-        adder(binding.toString())
+        let triple = []
+        let variables = []
+        let keys = binding.keys()
+        let key = keys.next()
+        while(!key.done){
+            triple.push(binding.get(key.value.value).id)
+            variables.push(key.value.value)
+            key = keys.next()
+        }   
+        variableSetter(variables)
+        adder(triple)
       })
     }).catch(err => {
       console.error(err.message)
