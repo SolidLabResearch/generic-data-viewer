@@ -1,6 +1,7 @@
 .right-field{
     box-sizing: border-box;
     display: inline-block;
+    text-align: center;
     width: calc(80% - 60px);
     height: calc(100% - 40px);
     background-color: lightgray;
@@ -17,6 +18,10 @@ button{
 
 #refresh-button{
     float: inline-start;
+}
+
+#querry-name-label{
+    display: inline-block;
 }
 
 #login-button{
