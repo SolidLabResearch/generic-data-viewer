@@ -7,7 +7,7 @@
             "name": "Test Querry",
             "description": "A simple Test querry",
             "id": "123",
-            "sources": ["http://dbpedia.org"]
+            "sources": ["https://ruben.verborgh.org/profile/#me"]
         }
     ]
 }
