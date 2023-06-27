@@ -1,4 +1,5 @@
 import "./SelectionTable.css"
+import ExtendableSelector from "../components/ExtendableSelector"
 
 function SelectionTable(props){
     const querries = props.querries
@@ -9,9 +10,9 @@ function SelectionTable(props){
             <div className="selection-table-box">
                 <ul id="querry-list">
                     {querries.map((element, index) => (
-                        <li key={index} onClick={() => onSelected(element)} className="querry-entry">
-                            <h3>{element.name}</h3>
-                        </li>
+                        <ExtendableSelector extendContent={element.description} key={index} className="querry-entry">
+                            <h3 onClick={() => onSelected(element)}>{element.name}</h3>
+                        </ExtendableSelector>
                     ))}
                 </ul>
             </div>
