@@ -60,7 +60,6 @@ function executeQuerry(querry, adder, variableSetter){
   
   function handleQuerryExecution(execution, adder, variableSetter){
     execution.then(bindingStream => {
-      console.log(bindingStream)
       bindingStream.on('data', (binding) => {
         let triple = []
         let variables = []
