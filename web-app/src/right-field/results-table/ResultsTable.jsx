@@ -1,7 +1,8 @@
 import "./ResultsTable.css"
 
 import config from "../../config.json"
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Grid } from "gridjs-react";
 
 config = JSON.parse(JSON.stringify(config))
 
@@ -19,7 +20,13 @@ const myEngine = new QueryEngine()
 function ResultsTable(props){
     const selectedQuerry = props.selectedQuerry
     const [results, setResults] = useState([])
+    const wrapperRef = useRef(undefined)
     let adder = (item) => setResults((old) => {return [...old, item]})
+
+    useEffect(() => {
+        const grid = new Grid()
+    }).render(wrapperRef.current)
+
     useEffect(() => {
         if(selectedQuerry){
             setResults([])
@@ -31,11 +38,7 @@ function ResultsTable(props){
     return(
         <div className="results-table">
             {!selectedQuerry && <label>Please select a querry.</label>}
-            <ul>
-                {results.map((element, index) => (
-                    <li key={index}>{element}</li>
-                ))}
-            </ul>
+            <div ref={wrapperRef}></div>
         </div>
     )
 }
