@@ -26,7 +26,14 @@ function ResultsTable(props){
     const selectedquery = props.selectedquery
     const [results, setResults] = useState([])
     const [variables, setVariables] = useState([])
-    let adder = (item) => setResults((old) => {return [...old, item]})
+    let adder = (item) => setResults((old) => {
+      let newValues = []
+      for(let variable of variables){
+        newValues.push(item.get(variable) ? item.get(variable).id : "")
+      }
+      return [...old, newValues]}
+      
+    )
     let variableAdder = (newList) => setVariables((old) => [...new Set([...newList, ...old])])
     let onqueryChanged = () => {
       if(selectedquery){
@@ -98,7 +105,7 @@ async function handlequeryExecution(execution, adder, variableSetter){
           key = keys.next()
       }   
       variableSetter(variables)
-      adder(triple)
+      adder(binding)
     })
 
     bindingStream.on('error', handlequeryResultFail)
