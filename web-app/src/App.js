@@ -7,10 +7,12 @@ import { useState } from "react";
 config = JSON.parse(JSON.stringify(config))
 
 
-
+/**
+ * 
+ * @returns {Component} The root of the app.
+ */
 function App() {
   const [selectedQuerry, setSelectedQuerry] = useState(undefined)
-
   return (
     <div className="App">
       <h1 className="app-title">{config.title}</h1>

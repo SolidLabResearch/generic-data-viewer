@@ -17,6 +17,12 @@ if(config.querry_folder.substring(config.querry_folder.length-1) !== '/'){
 const QueryEngine = require('@comunica/query-sparql').QueryEngine;
 const myEngine = new QueryEngine()
 
+/**
+ * 
+ * @param {Querry} props.querry The querry (as defined in the config file) that should be executed and results displayed in the table. 
+ * @returns {Component} A React component giving a structural representation of the querry results.  
+ */
+
 function ResultsTable(props){
     const selectedQuerry = props.selectedQuerry
     const [results, setResults] = useState([])
@@ -27,7 +33,7 @@ function ResultsTable(props){
             setResults([])
             executeQuerry(selectedQuerry, adder, setVariables)
         }
-    }, [selectedQuerry, props.clicks])
+    }, [selectedQuerry])
 
 
     return(
@@ -44,6 +50,12 @@ function ResultsTable(props){
     )
 }
 
+/**
+ * A function that executes a given querry and processes every result as a stream based on the functions provided. 
+ * @param {Querry} querry the querry which gets executed 
+ * @param {Function} adder a function which handles what happens with every variable result  
+ * @param {Function} variableSetter a function which handles what happens with every variable name 
+*/
 function executeQuerry(querry, adder, variableSetter){
     return fetch(`${config.querry_folder}${querry.querry_location}`).then(result => {
       result.text().then(q => {
@@ -57,26 +69,33 @@ function executeQuerry(querry, adder, variableSetter){
     })
    
   }
-  
-  function handleQuerryExecution(execution, adder, variableSetter){
-    execution.then(bindingStream => {
-      bindingStream.on('data', (binding) => {
-        let triple = []
-        let variables = []
-        let keys = binding.keys()
-        let key = keys.next()
-        while(!key.done){
-            triple.push(binding.get(key.value.value).id)
-            variables.push(key.value.value)
-            key = keys.next()
-        }   
-        variableSetter(variables)
-        adder(triple)
-      })
-    }).catch(err => {
-      console.error(err.message)
+
+
+/**
+ * A function that given a BindingStream processes every result as a stream based on the functions provided. 
+ * @param {Promise<BindingStream>} execution   
+ * @param {Function} adder a function which handles what happens with every variable result  
+ * @param {Function} variableSetter a function which handles what happens with every variable name 
+ */
+function handleQuerryExecution(execution, adder, variableSetter){
+  execution.then(bindingStream => {
+    bindingStream.on('data', (binding) => {
+      let triple = []
+      let variables = []
+      let keys = binding.keys()
+      let key = keys.next()
+      while(!key.done){
+          triple.push(binding.get(key.value.value).id)
+          variables.push(key.value.value)
+          key = keys.next()
+      }   
+      variableSetter(variables)
+      adder(triple)
     })
-  }
+  }).catch(err => {
+    console.error(err.message)
+  })
+}
 
 
 export default ResultsTable; 

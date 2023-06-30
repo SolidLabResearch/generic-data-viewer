@@ -1,5 +1,12 @@
 import "./SelectionTable.css"
 
+
+/**
+ * 
+ * @param {Array<Querry>} props.querries all the querries which the user can choose from.  
+ * @param {EventListener} props.onSelected event listeners that handles the event when a user selects a querry. 
+ * @returns {Component} A table which gives a list of selectable options based on the querries provided. 
+ */
 function SelectionTable(props){
     const querries = props.querries
     const onSelected = props.onSelected
