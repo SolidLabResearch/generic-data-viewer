@@ -7,7 +7,6 @@ Generic query-based data viewer
 After installing, the following steps suffice to install the application:
 
 ```bash
-cd web-app
 npm install 
 ```
 
