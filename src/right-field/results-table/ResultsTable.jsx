@@ -63,17 +63,19 @@ function ResultsTable(props){
  * @param {Function} adder a function which handles what happens with every variable result  
  * @param {Function} variableSetter a function which handles what happens with every variable name 
 */
-function executequery(query, adder, variableSetter){
-    return fetch(`${config.queryFolder}${query.queryLocation}`).then(result => {
-      result.text().then(q => {
-        const execution = myEngine.queryBindings(
-          q,
-          {sources:query.sources}
-        )
-        handlequeryExecution(execution, adder, variableSetter)
-      })
-    }).catch(handlequeryFetchFail)
+async function executequery(query, adder, variableSetter){
+  try{
+    let result = await fetch(`${config.queryFolder}${query.queryLocation}`)
+    let queryText = await result.text()
+    handlequeryExecution(myEngine.queryBindings(
+      queryText, {sources:query.sources}
+
+    ), adder, variableSetter)
   }
+  catch(error){
+    handlequeryFetchFail(error)
+  }
+}
 
 
 /**
@@ -82,8 +84,9 @@ function executequery(query, adder, variableSetter){
  * @param {Function} adder a function which handles what happens with every variable result  
  * @param {Function} variableSetter a function which handles what happens with every variable name 
  */
-function handlequeryExecution(execution, adder, variableSetter){
-  execution.then(bindingStream => {
+async function handlequeryExecution(execution, adder, variableSetter){
+  try{
+    let bindingStream = await execution 
     bindingStream.on('data', (binding) => {
       let triple = []
       let variables = []
@@ -99,7 +102,11 @@ function handlequeryExecution(execution, adder, variableSetter){
     })
 
     bindingStream.on('error', handlequeryResultFail)
-  }).catch(handleBindingStreamFail)
+  }
+  catch(error){
+    handleBindingStreamFail(error)
+  }
+   
 }
 
 /**
