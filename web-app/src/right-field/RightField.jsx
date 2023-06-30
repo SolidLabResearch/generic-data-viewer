@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 import ResultsTable from "./results-table/ResultsTable"
 import "./RightField.css"
 
@@ -8,17 +8,16 @@ import "./RightField.css"
  * @returns {Component} A React component that displays the given Querry in a table, with the functionality to refresh the results and to login for additional authorization.  
  */
 function RightField(props){
-    let querry = props.querry 
-    const [clicks, setClicks] = useState(0)
-    console.log(clicks)
+    let querry = props.querry
+    let refreshRef = useRef(undefined) 
     return(
         <div className="right-field">
             <div className="control-section">
-                <button onClick={() => setClicks((a) => {return a+1})} disabled={querry===undefined} id="refresh-button">Refresh</button>
+                <button ref={refreshRef}  disabled={querry===undefined} id="refresh-button">Refresh</button>
                 {querry && <label id="querry-name-label">{querry.name}</label>}
-                <button   id="login-button">Login</button>
+                <button id="login-button">Login</button>
             </div>
-            <ResultsTable click={clicks} selectedQuerry={querry}/>
+            <ResultsTable refreshButton={refreshRef}  selectedQuerry={querry}/>
         </div>
     )
 }

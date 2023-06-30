@@ -22,17 +22,24 @@ const myEngine = new QueryEngine()
  * @param {Querry} props.querry The querry (as defined in the config file) that should be executed and results displayed in the table. 
  * @returns {Component} A React component giving a structural representation of the querry results.  
  */
-
 function ResultsTable(props){
     const selectedQuerry = props.selectedQuerry
     const [results, setResults] = useState([])
     const [variables, setVariables] = useState([])
     let adder = (item) => setResults((old) => {return [...old, item]})
+    let onQuerryChanged = () => {
+      if(selectedQuerry){
+        setResults([])
+        executeQuerry(selectedQuerry, adder, setVariables)
+      }
+    }
+
+    if(props.refreshButton.current){
+      props.refreshButton.current.onclick = onQuerryChanged
+    }
+
     useEffect(() => {
-        if(selectedQuerry){
-            setResults([])
-            executeQuerry(selectedQuerry, adder, setVariables)
-        }
+        onQuerryChanged()
     }, [selectedQuerry])
 
 
