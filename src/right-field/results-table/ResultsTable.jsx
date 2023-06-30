@@ -6,12 +6,12 @@ import { Grid } from 'gridjs-react';
 import "gridjs/dist/theme/mermaid.min.css";
 config = JSON.parse(JSON.stringify(config))
 
-if(!config.querry_folder){
-  config.querry_folder = './'
+if(!config.querryFolder){
+  config.querryFolder = './'
 }
 
-if(config.querry_folder.substring(config.querry_folder.length-1) !== '/'){
-  config.querry_folder = `${config.querry_folder}/`
+if(config.querryFolder.substring(config.querryFolder.length-1) !== '/'){
+  config.querryFolder = `${config.querryFolder}/`
 }
 
 const QueryEngine = require('@comunica/query-sparql').QueryEngine;
@@ -64,7 +64,7 @@ function ResultsTable(props){
  * @param {Function} variableSetter a function which handles what happens with every variable name 
 */
 function executeQuerry(querry, adder, variableSetter){
-    return fetch(`${config.querry_folder}${querry.querry_location}`).then(result => {
+    return fetch(`${config.querryFolder}${querry.querryLocation}`).then(result => {
       result.text().then(q => {
         const execution = myEngine.queryBindings(
           q,

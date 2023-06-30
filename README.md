@@ -26,10 +26,10 @@ The configuration file follows a simple structure.
 ```json
 {
     "name": "Name shown at the top of the app as a title",
-    "querry_folder": "The base location of the querries, all querry locations will start from this folder",
+    "querryFolder": "The base location of the querries, all querry locations will start from this folder",
     "querries": [
         {
-            "querry_location": "path to the querry location, relative to "querry_folder"",
+            "querryLocation": "path to the querry location, relative to "querryFolder"",
             "name": "A name for the querry",
             "description": "Description of the querry",
             "id": "A unique ID for the querry",
