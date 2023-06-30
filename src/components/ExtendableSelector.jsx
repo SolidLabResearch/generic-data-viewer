@@ -15,7 +15,7 @@ function ExtendableSelector({onClick, extendContent, children}){
     let switchExtended = () => setExtended((old) => {return !old})
     return(
         <>
-            <li onClick={onClick} className="querry-entry">
+            <li onClick={onClick} className="query-entry">
                 <div className="extend-container">
                      {children}
                      <div onClick={(e) => {switchExtended(); e.target.classList.toggle('down')}} className="arrow"/>
