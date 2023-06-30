@@ -18,8 +18,14 @@ if(config.queryFolder.substring(config.queryFolder.length-1) !== '/'){
 const QueryEngine = require('@comunica/query-sparql').QueryEngine;
 const myEngine = new QueryEngine()
 
+function getLiteralValue(value){
+  let literal = value.split("^^")[0]
+  return literal.substring(1, literal.length - 1)
+}
+
 const variableRepresentationMapper = {
-  "img": (value) => _(<img src={value}></img>)
+  "img": (value) => _(<img src={value}></img>),
+  "int": (value) => {return getLiteralValue(value)}
 }
 
 
@@ -35,7 +41,6 @@ function ResultsTable(props){
 
     let adder = (item, variables) => setResults((old) => {
       let newValues = []
-      console.log(variables)
       for(let variable of variables){
         let value = item.get(variable) ? item.get(variable).id : ""
         let type = variable.split('_')[1]
@@ -48,7 +53,6 @@ function ResultsTable(props){
       
     )
 
-    let variableAdder = (newList) => setVariables((old) => [...new Set([...newList, ...old])])
     let onqueryChanged = () => {
       if(selectedquery){
         setResults([])
@@ -73,7 +77,8 @@ function ResultsTable(props){
             data={results} 
             fixedHeader={true}
             height={"100%"}
-            autoWidth="false" columns={variables}/>
+            autoWidth="false" 
+            columns={variables.map(column => {return column.split('_')[0]})}/>
             }
         </div>
     )
@@ -118,7 +123,7 @@ async function handlequeryExecution(execution, adder, variableSetter){
           variables.push(key.value.value)
           key = keys.next()
       }   
-      variablesMain = [...new Set([...variables, ...variablesMain])]
+      variablesMain = extendList(variablesMain, variables)
       variableSetter(variablesMain)
       adder(binding, variablesMain)
     })
@@ -129,6 +134,15 @@ async function handlequeryExecution(execution, adder, variableSetter){
     handleBindingStreamFail(error)
   }
    
+}
+
+function extendList(list, newList){
+  for(let value of newList){
+    if(!list.includes(value)){
+      list.push(value)
+    }
+  }
+  return list
 }
 
 /**
