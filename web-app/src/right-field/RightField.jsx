@@ -6,17 +6,23 @@ import config from "../config.json"
 
 config = JSON.parse(JSON.stringify(config))
 
+
+/**
+ * 
+ * @param {Querry} props.selectedQuerry the currently  
+ * @returns 
+ */
 function RightField(props){
-    let selectedQuerry = props.selectedQuerry 
+    let querry = props.querry 
     const [clicks, setClicks] = useState(0)
     return(
         <div className="right-field">
             <div className="control-section">
-                <button onClick={() => setClicks((a) => {return a + 1})} disabled={selectedQuerry===undefined} id="refresh-button">Refresh</button>
-                {selectedQuerry && <label id="querry-name-label">{selectedQuerry.name}</label>}
+                <button onClick={() => setClicks((a) => {return a + 1})} disabled={querry===undefined} id="refresh-button">Refresh</button>
+                {querry && <label id="querry-name-label">{querry.name}</label>}
                 <button   id="login-button">Login</button>
             </div>
-            <ResultsTable click={clicks} selectedQuerry={selectedQuerry}/>
+            <ResultsTable click={clicks} querry={querry}/>
         </div>
     )
 }

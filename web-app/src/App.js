@@ -16,7 +16,7 @@ function App() {
       <h1 className="app-title">{config.title}</h1>
       <div className="app-body">
         <SelectionTable onSelected={(querry) => setSelectedQuerry(querry)} querries={config.querries}/>
-        <RightField selectedQuerry={selectedQuerry} />
+        <RightField querry={selectedQuerry} />
       </div>
       <footer><p><a href="https://idlab.technology/">IDLab</a> - <a href="https://www.imec.be/nl">imec</a> - <a href="https://www.ugent.be/">UGent</a></p></footer>
 
