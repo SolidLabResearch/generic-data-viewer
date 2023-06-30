@@ -2,8 +2,9 @@ import "./ResultsTable.css"
 
 import config from "../../config.json"
 import { useEffect, useState } from "react";
-import { Grid } from 'gridjs-react';
+import { Grid, _ } from 'gridjs-react';
 import "gridjs/dist/theme/mermaid.min.css";
+
 config = JSON.parse(JSON.stringify(config))
 
 if(!config.queryFolder){
@@ -17,6 +18,11 @@ if(config.queryFolder.substring(config.queryFolder.length-1) !== '/'){
 const QueryEngine = require('@comunica/query-sparql').QueryEngine;
 const myEngine = new QueryEngine()
 
+const variableRepresentationMapper = {
+  "img": (value) => _(<img src={value}></img>)
+}
+
+
 /**
  * 
  * @param {query} props.query The query (as defined in the config file) that should be executed and results displayed in the table. 
@@ -26,19 +32,28 @@ function ResultsTable(props){
     const selectedquery = props.selectedquery
     const [results, setResults] = useState([])
     const [variables, setVariables] = useState([])
-    let adder = (item) => setResults((old) => {
+
+    let adder = (item, variables) => setResults((old) => {
       let newValues = []
+      console.log(variables)
       for(let variable of variables){
-        newValues.push(item.get(variable) ? item.get(variable).id : "")
+        let value = item.get(variable) ? item.get(variable).id : ""
+        let type = variable.split('_')[1]
+        let componentCaller = variableRepresentationMapper[type] 
+        componentCaller = componentCaller ? componentCaller : (text) => text
+        newValues.push(componentCaller(value))
       }
+      
       return [...old, newValues]}
       
     )
+
     let variableAdder = (newList) => setVariables((old) => [...new Set([...newList, ...old])])
     let onqueryChanged = () => {
       if(selectedquery){
         setResults([])
-        executequery(selectedquery, adder, variableAdder)
+        setVariables([])
+        executequery(selectedquery, adder, setVariables)
       }
     }
 
@@ -58,7 +73,7 @@ function ResultsTable(props){
             data={results} 
             fixedHeader={true}
             height={"100%"}
-            autoWidth="true" columns={variables}/>
+            autoWidth="false" columns={variables}/>
             }
         </div>
     )
@@ -94,18 +109,18 @@ async function executequery(query, adder, variableSetter){
 async function handlequeryExecution(execution, adder, variableSetter){
   try{
     let bindingStream = await execution 
+    let variablesMain = []
     bindingStream.on('data', (binding) => {
-      let triple = []
       let variables = []
       let keys = binding.keys()
       let key = keys.next()
       while(!key.done){
-          triple.push(binding.get(key.value.value).id)
           variables.push(key.value.value)
           key = keys.next()
       }   
-      variableSetter(variables)
-      adder(binding)
+      variablesMain = [...new Set([...variables, ...variablesMain])]
+      variableSetter(variablesMain)
+      adder(binding, variablesMain)
     })
 
     bindingStream.on('error', handlequeryResultFail)
