@@ -15,6 +15,13 @@
             "description": "A second simple test query",
             "id": "456",
             "sources": ["https://ruben.verborgh.org/profile/#me"]
+        },
+        {
+            "queryLocation": "images_test.ttl",
+            "name": "A Test For Images",
+            "description": "A small test to test the functionality of the web-app concerning images",
+            "id": "789",
+            "sources": ["https://ruben.verborgh.org/"]
         }
     ]
 }
