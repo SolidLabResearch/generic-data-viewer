@@ -83,17 +83,26 @@ function executequery(query, adder, variableSetter){
  */
 function handlequeryExecution(execution, adder, variableSetter){
   execution.then(bindingStream => {
-    bindingStream.on('data', (binding) => {
-      let triple = []
+
+    bindingStream.once('data', (binding) => {
       let variables = []
       let keys = binding.keys()
       let key = keys.next()
       while(!key.done){
+        variables.push(key.value.value)
+        key = keys.next()
+      }
+      variableSetter(variables)
+    })
+
+    bindingStream.on('data', (binding) => {
+      let triple = []
+      let keys = binding.keys()
+      let key = keys.next()
+      while(!key.done){
           triple.push(binding.get(key.value.value).id)
-          variables.push(key.value.value)
           key = keys.next()
       }   
-      variableSetter(variables)
       adder(triple)
     })
 
