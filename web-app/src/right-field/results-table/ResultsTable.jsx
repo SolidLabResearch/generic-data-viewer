@@ -65,9 +65,7 @@ function executeQuerry(querry, adder, variableSetter){
         )
         handleQuerryExecution(execution, adder, variableSetter)
       })
-      
-    })
-   
+    }).catch(handleQuerryFetchFail)
   }
 
 
@@ -92,9 +90,33 @@ function handleQuerryExecution(execution, adder, variableSetter){
       variableSetter(variables)
       adder(triple)
     })
-  }).catch(err => {
-    console.error(err.message)
-  })
+
+    bindingStream.on('error', handleQuerryResultFail)
+  }).catch(handleBindingStreamFail)
+}
+
+/**
+ * Handles the event whenever an error occurs during querry execution. 
+ * @param {Error} error object returned by the communica engine whenever a problem occurs during query execution.
+ */
+function handleQuerryResultFail(error){
+  console.error(error)
+}
+
+/**
+ * Handles the event whenever the creation of a BindingStream fails. 
+ * @param {Error} error error object returned by the communica engine whenever the creation of a BindingStream fails.  
+ */
+function handleBindingStreamFail(error){
+  console.error(error)
+}
+
+/**
+ * Handles the event whenever the fetching of a querry fails.
+ * @param {Error} error the object returned by the fetch API whenever the fetch fails. 
+ */
+function handleQuerryFetchFail(error){
+  console.error(error)
 }
 
 
