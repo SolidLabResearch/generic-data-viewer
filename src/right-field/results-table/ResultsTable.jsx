@@ -6,12 +6,12 @@ import { Grid } from 'gridjs-react';
 import "gridjs/dist/theme/mermaid.min.css";
 config = JSON.parse(JSON.stringify(config))
 
-if(!config.querryFolder){
-  config.querryFolder = './'
+if(!config.queryFolder){
+  config.queryFolder = './'
 }
 
-if(config.querryFolder.substring(config.querryFolder.length-1) !== '/'){
-  config.querryFolder = `${config.querryFolder}/`
+if(config.queryFolder.substring(config.queryFolder.length-1) !== '/'){
+  config.queryFolder = `${config.queryFolder}/`
 }
 
 const QueryEngine = require('@comunica/query-sparql').QueryEngine;
@@ -19,34 +19,33 @@ const myEngine = new QueryEngine()
 
 /**
  * 
- * @param {Querry} props.querry The querry (as defined in the config file) that should be executed and results displayed in the table. 
- * @returns {Component} A React component giving a structural representation of the querry results.  
+ * @param {query} props.query The query (as defined in the config file) that should be executed and results displayed in the table. 
+ * @returns {Component} A React component giving a structural representation of the query results.  
  */
 function ResultsTable(props){
-    const selectedQuerry = props.selectedQuerry
+    const selectedquery = props.selectedquery
     const [results, setResults] = useState([])
     const [variables, setVariables] = useState([])
     let adder = (item) => setResults((old) => {return [...old, item]})
-    let onQuerryChanged = () => {
-      if(selectedQuerry){
+    let onqueryChanged = () => {
+      if(selectedquery){
         setResults([])
-        executeQuerry(selectedQuerry, adder, setVariables)
+        executequery(selectedquery, adder, setVariables)
       }
     }
 
     if(props.refreshButton.current){
-      props.refreshButton.current.onclick = onQuerryChanged
+      props.refreshButton.current.onclick = onqueryChanged
     }
 
     useEffect(() => {
-        onQuerryChanged()
-    }, [selectedQuerry])
-
+        onqueryChanged()
+    }, [selectedquery])
 
     return(
         <div className="results-table">
-            {!selectedQuerry && <label>Please select a querry.</label>}
-            {selectedQuerry && 
+            {!selectedquery && <label>Please select a query.</label>}
+            {selectedquery && 
             <Grid style={{td: {"text-align": "center"}, th: {"text-align": "center"}}} 
             data={results} 
             fixedHeader={true}
@@ -58,21 +57,21 @@ function ResultsTable(props){
 }
 
 /**
- * A function that executes a given querry and processes every result as a stream based on the functions provided. 
- * @param {Querry} querry the querry which gets executed 
+ * A function that executes a given query and processes every result as a stream based on the functions provided. 
+ * @param {query} query the query which gets executed 
  * @param {Function} adder a function which handles what happens with every variable result  
  * @param {Function} variableSetter a function which handles what happens with every variable name 
 */
-function executeQuerry(querry, adder, variableSetter){
-    return fetch(`${config.querryFolder}${querry.querryLocation}`).then(result => {
+function executequery(query, adder, variableSetter){
+    return fetch(`${config.queryFolder}${query.queryLocation}`).then(result => {
       result.text().then(q => {
         const execution = myEngine.queryBindings(
           q,
-          {sources:querry.sources}
+          {sources:query.sources}
         )
-        handleQuerryExecution(execution, adder, variableSetter)
+        handlequeryExecution(execution, adder, variableSetter)
       })
-    }).catch(handleQuerryFetchFail)
+    }).catch(handlequeryFetchFail)
   }
 
 
@@ -82,7 +81,7 @@ function executeQuerry(querry, adder, variableSetter){
  * @param {Function} adder a function which handles what happens with every variable result  
  * @param {Function} variableSetter a function which handles what happens with every variable name 
  */
-function handleQuerryExecution(execution, adder, variableSetter){
+function handlequeryExecution(execution, adder, variableSetter){
   execution.then(bindingStream => {
     bindingStream.on('data', (binding) => {
       let triple = []
@@ -98,15 +97,15 @@ function handleQuerryExecution(execution, adder, variableSetter){
       adder(triple)
     })
 
-    bindingStream.on('error', handleQuerryResultFail)
+    bindingStream.on('error', handlequeryResultFail)
   }).catch(handleBindingStreamFail)
 }
 
 /**
- * Handles the event whenever an error occurs during querry execution. 
+ * Handles the event whenever an error occurs during query execution. 
  * @param {Error} error object returned by the communica engine whenever a problem occurs during query execution.
  */
-function handleQuerryResultFail(error){
+function handlequeryResultFail(error){
   console.error(error)
 }
 
@@ -119,10 +118,10 @@ function handleBindingStreamFail(error){
 }
 
 /**
- * Handles the event whenever the fetching of a querry fails.
+ * Handles the event whenever the fetching of a query fails.
  * @param {Error} error the object returned by the fetch API whenever the fetch fails. 
  */
-function handleQuerryFetchFail(error){
+function handlequeryFetchFail(error){
   console.error(error)
 }
 

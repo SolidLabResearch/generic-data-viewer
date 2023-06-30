@@ -8,7 +8,7 @@
     background-color: lightgray;
 }
 
-#querries-title{
+#queries-title{
     display: flex;
     align-items: center;
     height: 5%;
@@ -19,17 +19,17 @@
     height: calc(95% - 60px );
 }
 
-#querry-list{
+#query-list{
     list-style-type: none;
     margin: 0;
     padding: 0;
 }
 
-.querry-entry{
+.query-entry{
     margin: 0;
     padding: 0;
 }
 
-.querry-entry h3{
+.query-entry h3{
     user-select: none;
 }

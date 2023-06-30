@@ -12,13 +12,13 @@ config = JSON.parse(JSON.stringify(config))
  * @returns {Component} The root of the app.
  */
 function App() {
-  const [selectedQuerry, setSelectedQuerry] = useState(undefined)
+  const [selectedquery, setSelectedquery] = useState(undefined)
   return (
     <div className="App">
       <h1 className="app-title">{config.title}</h1>
       <div className="app-body">
-        <SelectionTable onSelected={(querry) => setSelectedQuerry(querry)} querries={config.querries}/>
-        <RightField querry={selectedQuerry} />
+        <SelectionTable onSelected={(query) => setSelectedquery(query)} queries={config.queries}/>
+        <RightField query={selectedquery} />
       </div>
       <footer><p><a href="https://idlab.technology/">IDLab</a> - <a href="https://www.imec.be/nl">imec</a> - <a href="https://www.ugent.be/">UGent</a></p></footer>
 

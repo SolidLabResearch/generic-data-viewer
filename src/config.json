@@ -1,18 +1,18 @@
 {
     "title": "Generic Data Viewer",
-    "querryFolder": "querries",
-    "querries": [
+    "queryFolder": "queries",
+    "queries": [
         {
-            "querryLocation": "test.ttl",
-            "name": "Test Querry",
-            "description": "A simple Test querry",
+            "queryLocation": "test.ttl",
+            "name": "Test query",
+            "description": "A simple Test query",
             "id": "123",
             "sources": ["https://ruben.verborgh.org/profile/#me"]
         },
         {
-            "querryLocation": "test2.ttl",
-            "name": "Second Test Querry",
-            "description": "A second simple test Querry",
+            "queryLocation": "test2.ttl",
+            "name": "Second Test query",
+            "description": "A second simple test query",
             "id": "456",
             "sources": ["https://ruben.verborgh.org/profile/#me"]
         }
