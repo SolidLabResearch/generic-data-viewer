@@ -1,0 +1,35 @@
+
+
+.selection-table{
+    display: inline;
+    height: calc(100% - 40px);
+    width: 20%;
+    margin-right: 0;
+    background-color: lightgray;
+}
+
+#queries-title{
+    display: flex;
+    align-items: center;
+    height: 5%;
+}
+
+.selection-table-box{
+    margin-top: 0;
+    height: calc(95% - 60px );
+}
+
+#query-list{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.query-entry{
+    margin: 0;
+    padding: 0;
+}
+
+.query-entry h3{
+    user-select: none;
+}

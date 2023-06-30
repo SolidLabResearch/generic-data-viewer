@@ -1,0 +1,20 @@
+{
+    "title": "Generic Data Viewer",
+    "queryFolder": "queries",
+    "queries": [
+        {
+            "queryLocation": "test.ttl",
+            "name": "Test query",
+            "description": "A simple Test query",
+            "id": "123",
+            "sources": ["https://fragments.dbpedia.org/2016-04/en"]
+        },
+        {
+            "queryLocation": "test2.ttl",
+            "name": "Second Test query",
+            "description": "A second simple test query",
+            "id": "456",
+            "sources": ["https://ruben.verborgh.org/profile/#me"]
+        }
+    ]
+}
