@@ -1,5 +1,7 @@
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-SELECT ?s ?o
-WHERE {
-  ?s foaf:knows ?o
+SELECT ?name ?deathDate WHERE {
+  ?person a dbpedia-owl:Artist;
+          rdfs:label ?name;
+          dbpedia-owl:birthPlace [ rdfs:label "York"@en ].
+  FILTER LANGMATCHES(LANG(?name),  "EN")
+  OPTIONAL { ?person dbpprop:dateOfDeath ?deathDate. }
 }

@@ -7,7 +7,7 @@
             "name": "Test query",
             "description": "A simple Test query",
             "id": "123",
-            "sources": ["https://ruben.verborgh.org/profile/#me"]
+            "sources": ["https://fragments.dbpedia.org/2016-04/en"]
         },
         {
             "queryLocation": "test2.ttl",
