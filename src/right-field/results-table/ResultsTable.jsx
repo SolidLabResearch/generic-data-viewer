@@ -27,10 +27,11 @@ function ResultsTable(props){
     const [results, setResults] = useState([])
     const [variables, setVariables] = useState([])
     let adder = (item) => setResults((old) => {return [...old, item]})
+    let variableAdder = (newList) => setVariables((old) => [...new Set([...newList, ...old])])
     let onqueryChanged = () => {
       if(selectedquery){
         setResults([])
-        executequery(selectedquery, adder, setVariables)
+        executequery(selectedquery, adder, variableAdder)
       }
     }
 
@@ -83,26 +84,17 @@ function executequery(query, adder, variableSetter){
  */
 function handlequeryExecution(execution, adder, variableSetter){
   execution.then(bindingStream => {
-
-    bindingStream.once('data', (binding) => {
+    bindingStream.on('data', (binding) => {
+      let triple = []
       let variables = []
       let keys = binding.keys()
       let key = keys.next()
       while(!key.done){
-        variables.push(key.value.value)
-        key = keys.next()
-      }
-      variableSetter(variables)
-    })
-
-    bindingStream.on('data', (binding) => {
-      let triple = []
-      let keys = binding.keys()
-      let key = keys.next()
-      while(!key.done){
           triple.push(binding.get(key.value.value).id)
+          variables.push(key.value.value)
           key = keys.next()
       }   
+      variableSetter(variables)
       adder(triple)
     })
 
