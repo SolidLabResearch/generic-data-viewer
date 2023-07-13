@@ -4,7 +4,7 @@ import config from "../../config.json"
 import { useEffect, useState } from "react";
 import { Grid, _ } from 'gridjs-react';
 import "gridjs/dist/theme/mermaid.min.css";
-import {typeRepresentationMapper} from '../../representationMapper.js'
+import {typeRepresentationMapper, typeSortMapper} from '../../representationMapper.js'
 
 config = JSON.parse(JSON.stringify(config))
 
@@ -70,10 +70,20 @@ function ResultsTable(props){
             height={"100%"}
             autoWidth="false" 
             sort={true}
-            columns={variables.map(column => {return column.split('_')[0]})}/>
+            columns={variables.map(column => {return generateColumn(column)})}/>
             }
         </div>
     )
+}
+
+function generateColumn(variable){
+  let variableSplitted = variable.split('_')
+  return {
+    name: variableSplitted[0],
+    sort: {
+      compare: typeSortMapper[variableSplitted[1]]
+    }
+  }
 }
 
 /**
