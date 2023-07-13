@@ -4,7 +4,7 @@ import config from "../../config.json"
 import { useEffect, useState } from "react";
 import { Grid, _ } from 'gridjs-react';
 import "gridjs/dist/theme/mermaid.min.css";
-import variableRepresentationMapper from '../../representationMapper.js'
+import {typeRepresentationMapper} from '../../representationMapper.js'
 
 config = JSON.parse(JSON.stringify(config))
 
@@ -35,7 +35,7 @@ function ResultsTable(props){
       for(let variable of variables){
         let value = item.get(variable) ? item.get(variable).id : ""
         let type = variable.split('_')[1]
-        let componentCaller = variableRepresentationMapper[type] 
+        let componentCaller = typeRepresentationMapper[type] 
         componentCaller = componentCaller ? componentCaller : (text) => text
         newValues.push(componentCaller(value))
       }
@@ -69,6 +69,7 @@ function ResultsTable(props){
             fixedHeader={true}
             height={"100%"}
             autoWidth="false" 
+            sort={true}
             columns={variables.map(column => {return column.split('_')[0]})}/>
             }
         </div>
