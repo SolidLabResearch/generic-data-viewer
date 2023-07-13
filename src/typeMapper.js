@@ -4,7 +4,6 @@ export const typeRepresentationMapper = {
   "img": (value) => _(<img src={value}></img>),
   "int": (value) => {return literalToNumber(value, parseInt) },
   "float": (value) => {return literalToNumber(value, parseFloat)},
-  "string": (value) => {return getLiteralValue(value)},
   "euro": (value) => {return `€ ${getLiteralValue(value)}`},
   "dollar": (value) => {return `$ ${getLiteralValue(value)}`}
 }
