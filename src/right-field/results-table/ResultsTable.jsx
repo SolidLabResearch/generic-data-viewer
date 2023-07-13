@@ -4,6 +4,7 @@ import config from "../../config.json"
 import { useEffect, useState } from "react";
 import { Grid, _ } from 'gridjs-react';
 import "gridjs/dist/theme/mermaid.min.css";
+import variableRepresentationMapper from '../../representationMapper.js'
 
 config = JSON.parse(JSON.stringify(config))
 
@@ -17,17 +18,6 @@ if(config.queryFolder.substring(config.queryFolder.length-1) !== '/'){
 
 const QueryEngine = require('@comunica/query-sparql').QueryEngine;
 const myEngine = new QueryEngine()
-
-function getLiteralValue(value){
-  let literal = value.split("^^")[0]
-  return literal.substring(1, literal.length - 1)
-}
-
-const variableRepresentationMapper = {
-  "img": (value) => _(<img src={value}></img>),
-  "int": (value) => {return getLiteralValue(value)},
-  "float": (value) => {return getLiteralValue(value)}
-}
 
 
 /**
