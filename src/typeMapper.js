@@ -1,7 +1,7 @@
 import { _ } from 'gridjs-react';
 
 export const typeRepresentationMapper = {
-  "img": (value) => _(<img src={value}></img>),
+  "img": (value) => _(<img src={value.id}></img>),
   "int": (value) => {return literalToNumber(value, parseInt) },
   "float": (value) => {return literalToNumber(value, parseFloat)},
   "euro": (value) => {return `€ ${getLiteralValue(value)}`},
@@ -32,7 +32,7 @@ function sortNumber(valueA, valueB){
 
 /**
  * 
- * @param {Number} value string value which is to be converted to a number
+ * @param {RDF/JS} value RDF/JS object model value which is to be converted to a number
  * @param {Function} parseFunction a function that takes the string value of a number and converts it to the corresponding number subclass 
  * @returns A number parsed in the correct type (e.g. integer, float...) or an empty string (instead of NaN)
  */
@@ -42,17 +42,16 @@ function literalToNumber(value, parseFunction){
     return parseFunction(literalValue)
   }
   else{
-    return value 
+    return "" 
   }
 }
 
 /**
  * 
- * @param {String} value 
+ * @param {RDF/JS} literal 
  * @returns Gets the value out of a literal as defined in https://www.w3.org/TR/rdf11-concepts/ , thus the value without type, language specifics...
  */
-function getLiteralValue(value){
-    let literal = value.split("^^")[0]
-    return literal.substring(1, literal.length - 1)
+function getLiteralValue(literal){
+    return literal.value
 }
 

@@ -33,10 +33,10 @@ function ResultsTable(props){
     let adder = (item, variables) => setResults((old) => {
       let newValues = []
       for(let variable of variables){
-        let value = item.get(variable) ? item.get(variable).id : ""
+        let value = item.get(variable) ? item.get(variable) : ""
         let type = variable.split('_')[1]
         let componentCaller = typeRepresentationMapper[type] 
-        componentCaller = componentCaller ? componentCaller : (text) => text
+        componentCaller = componentCaller ? componentCaller : (text) => text.id
         newValues.push(componentCaller(value))
       }
       
