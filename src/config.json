@@ -19,7 +19,7 @@
         {
             "queryLocation": "images_test.ttl",
             "name": "A Test For Images",
-            "description": "A small test to test the functionality of the web-app concerning images",
+            "description": "A small test to test the functionality of the Web app concerning images",
             "id": "789",
             "sources": ["https://ruben.verborgh.org/"]
         }
