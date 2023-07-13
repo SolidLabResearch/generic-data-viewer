@@ -25,7 +25,8 @@ function getLiteralValue(value){
 
 const variableRepresentationMapper = {
   "img": (value) => _(<img src={value}></img>),
-  "int": (value) => {return getLiteralValue(value)}
+  "int": (value) => {return getLiteralValue(value)},
+  "float": (value) => {return getLiteralValue(value)}
 }
 
 
