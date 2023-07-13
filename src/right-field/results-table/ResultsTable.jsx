@@ -4,7 +4,7 @@ import config from "../../config.json"
 import { useEffect, useState } from "react";
 import { Grid, _ } from 'gridjs-react';
 import "gridjs/dist/theme/mermaid.min.css";
-import {typeRepresentationMapper, typeSortMapper} from '../../representationMapper.js'
+import {typeRepresentationMapper, typeSortMapper} from '../../typeMapper.js'
 
 config = JSON.parse(JSON.stringify(config))
 
