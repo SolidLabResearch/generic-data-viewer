@@ -42,7 +42,7 @@ function literalToNumber(value, parseFunction){
     return parseFunction(literalValue)
   }
   else{
-    return "" 
+    return undefined
   }
 }
 

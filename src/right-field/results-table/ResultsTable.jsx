@@ -29,6 +29,7 @@ function ResultsTable(props){
     const selectedquery = props.selectedquery
     const [results, setResults] = useState([])
     const [variables, setVariables] = useState([])
+    const [bindingStream, setBindingStream] = useState(undefined)
 
     let adder = (item, variables) => setResults((old) => {
       let newValues = []
@@ -44,11 +45,20 @@ function ResultsTable(props){
       
     )
 
-    let onqueryChanged = () => {
+    let onqueryChanged = async () => {
+      if(bindingStream){
+        removeBindingStreamListeners(bindingStream)
+      }
+      setResults([])
+      setVariables([])
       if(selectedquery){
-        setResults([])
-        setVariables([])
-        executequery(selectedquery, adder, setVariables)
+        try{
+          let newBindingStream = await executequery(selectedquery)
+          configureBindingStream(newBindingStream, setVariables, adder, setBindingStream)
+        }
+        catch(error){
+
+        }
       }
     }
 
@@ -76,6 +86,33 @@ function ResultsTable(props){
     )
 }
 
+function removeBindingStreamListeners(bindingStream){
+  bindingStream.removeAllListeners('data')
+  bindingStream.removeAllListeners('end')
+  bindingStream.removeAllListeners('error')
+}
+
+async function configureBindingStream(bindingStream, variableSetter, adder, bindingStreamSetter){
+  let variablesMain = []
+  let handleData = (binding) => {
+    let variables = []
+    let keys = binding.keys()
+    let key = keys.next()
+    while(!key.done){
+        variables.push(key.value.value)
+        key = keys.next()
+    }   
+    variablesMain = extendList(variablesMain, variables)
+    variableSetter(variablesMain)
+    adder(binding, variablesMain)
+  }
+
+  bindingStream.on('data', handleData)
+  bindingStream.on('end', () => bindingStreamSetter(undefined))
+  bindingStream.on('error', handlequeryResultFail)
+  bindingStreamSetter(bindingStream)
+}
+
 function generateColumn(variable){
   let variableSplitted = variable.split('_')
   return {
@@ -92,14 +129,14 @@ function generateColumn(variable){
  * @param {Function} adder a function which handles what happens with every variable result  
  * @param {Function} variableSetter a function which handles what happens with every variable name 
 */
-async function executequery(query, adder, variableSetter){
+async function executequery(query){
   try{
     let result = await fetch(`${config.queryFolder}${query.queryLocation}`)
     let queryText = await result.text()
-    handlequeryExecution(myEngine.queryBindings(
+    return handlequeryExecution(myEngine.queryBindings(
       queryText, {sources:query.sources}
 
-    ), adder, variableSetter)
+    ))
   }
   catch(error){
     handlequeryFetchFail(error)
@@ -109,28 +146,15 @@ async function executequery(query, adder, variableSetter){
 
 /**
  * A function that given a BindingStream processes every result as a stream based on the functions provided. 
- * @param {Promise<BindingStream>} execution   
+ * @param {BindingStream} execution   
  * @param {Function} adder a function which handles what happens with every variable result  
  * @param {Function} variableSetter a function which handles what happens with every variable name 
  */
-async function handlequeryExecution(execution, adder, variableSetter){
+async function handlequeryExecution(execution){
   try{
     let bindingStream = await execution 
-    let variablesMain = []
-    bindingStream.on('data', (binding) => {
-      let variables = []
-      let keys = binding.keys()
-      let key = keys.next()
-      while(!key.done){
-          variables.push(key.value.value)
-          key = keys.next()
-      }   
-      variablesMain = extendList(variablesMain, variables)
-      variableSetter(variablesMain)
-      adder(binding, variablesMain)
-    })
-
-    bindingStream.on('error', handlequeryResultFail)
+    
+    return bindingStream
   }
   catch(error){
     handleBindingStreamFail(error)
