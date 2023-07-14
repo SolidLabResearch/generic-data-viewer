@@ -34,7 +34,7 @@ function sortNumber(valueA, valueB){
  * 
  * @param {RDF/JS} value RDF/JS object model value which is to be converted to a number
  * @param {Function} parseFunction a function that takes the string value of a number and converts it to the corresponding number subclass 
- * @returns A number parsed in the correct type (e.g. integer, float...) or an empty string (instead of NaN)
+ * @returns A number parsed in the correct type (e.g. integer, float...) or undefined (instead of NaN)
  */
 function literalToNumber(value, parseFunction){
   let literalValue = getLiteralValue(value)
@@ -42,7 +42,7 @@ function literalToNumber(value, parseFunction){
     return parseFunction(literalValue)
   }
   else{
-    return "" 
+    return undefined
   }
 }
 
