@@ -18,9 +18,7 @@ if(config.queryFolder.substring(config.queryFolder.length-1) !== '/'){
 }
 
 
-const queryWorker = new QueryWorker()
-configureQueryWorker(queryWorker)
-
+let queryWorker = undefined
 
 /**
  * 
@@ -37,6 +35,7 @@ function ResultsTable(props){
     let adder = (item, variables) => setResults((old) => {
       let newValues = []
       for(let variable of variables){
+        console.log(variable)
         let value = item[variable] ? item[variable] : ""
         let type = variable.split('_')[1]
         let componentCaller = typeRepresentationMapper[type] 
@@ -48,12 +47,18 @@ function ResultsTable(props){
       
     )
     
-    configureQueryWorker(adder, setVariables)
+    configureQueryWorker(adder, setVariables, setQuerying)
 
-    let onqueryChanged = async () => {
-      setResults([])
-      setVariables([])
+    let onqueryChanged = () => {
+      
       if(selectedquery){
+        if(isQuerying){
+          queryWorker.terminate()
+          configureQueryWorker(adder, setVariables, setQuerying)
+        }
+        setResults([])
+        setVariables([])
+        setQuerying(true)
         executequery(selectedquery)
       }
     }
@@ -82,23 +87,25 @@ function ResultsTable(props){
     )
 }
 
-function configureQueryWorker(adder, variableSetter){
+function configureQueryWorker(adder, variableSetter, setIsQuerying){
+  queryWorker = new QueryWorker()
+  let variablesMain = []
   queryWorker.onmessage = ({data}) => {
     switch (data.type){
       case 'result':
         let binding = JSON.parse(data.result)
         let entries = binding.entries 
-        let variables = []
-        let keys = Object.keys(binding.entries)
-        for(let key of keys ){
-            variables.push(key)
-        }   
-        let variablesMain = []
-        variableSetter((old) => {
-          variablesMain = extendList(old, variables)
-          adder(entries, variablesMain)
-          return variablesMain
-        })
+        console.log(entries)
+        adder(entries, variablesMain)
+          
+        break; 
+      case "end":
+        setIsQuerying(false)
+        break; 
+      case "metadata": {
+        variablesMain = data.metadata.variables.map(val => val.value)
+        variableSetter(variablesMain)
+      }
     }
   }
 }
@@ -129,15 +136,6 @@ async function executequery(query){
   catch(error){
     handlequeryFetchFail(error)
   }
-}
-
-function extendList(list, newList){
-  for(let value of newList){
-    if(!list.includes(value)){
-      list.push(value)
-    }
-  }
-  return list
 }
 
 /**

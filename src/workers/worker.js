@@ -17,7 +17,7 @@ onmessage = (selectedQuery) => {
 */
 async function executequery(query){
     try{
-      return handlequeryExecution(myEngine.queryBindings(
+      return handlequeryExecution(myEngine.query(
         query.queryText, {sources:query.sources}
   
       ))
@@ -36,10 +36,16 @@ async function executequery(query){
    */
   async function handlequeryExecution(execution){
     try{
-      let bindingStream = await execution 
-      configureBindingStream(bindingStream)
+      execution = await execution 
+      let metadata = await execution.metadata()
+      postMessage({type: 'metadata', metadata: {variables: metadata.variables, queryType: execution.resultType}})
 
-      return bindingStream
+      switch (execution.resultType){
+        case "bindings": {
+          configureBindingStream(await execution.execute())
+        }
+      }
+
     }
     catch(error){
       handleBindingStreamFail(error)
