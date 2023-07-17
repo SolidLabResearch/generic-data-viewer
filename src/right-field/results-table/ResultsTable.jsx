@@ -31,7 +31,7 @@ function ResultsTable(props){
     const selectedquery = props.selectedquery
     const [results, setResults] = useState([])
     const [variables, setVariables] = useState([])
-    const [bindingStream, setBindingStream] = useState(undefined)
+    const [isQuerying, setQuerying] = useState(false)
 
 
     let adder = (item, variables) => setResults((old) => {
@@ -87,12 +87,6 @@ function ResultsTable(props){
     )
 }
 
-function removeBindingStreamListeners(bindingStream){
-  bindingStream.removeAllListeners('data')
-  bindingStream.removeAllListeners('end')
-  bindingStream.removeAllListeners('error')
-}
-
 function configureQueryWorker(adder, variableSetter){
   queryWorker.onmessage = ({data}) => {
     switch (data.type){
@@ -114,26 +108,6 @@ function configureQueryWorker(adder, variableSetter){
   }
 }
 
-async function configureBindingStream(bindingStream, variableSetter, adder, bindingStreamSetter){
-  let variablesMain = []
-  let handleData = (binding) => {
-    let variables = []
-    let keys = binding.keys()
-    let key = keys.next()
-    while(!key.done){
-        variables.push(key.value.value)
-        key = keys.next()
-    }   
-    variablesMain = extendList(variablesMain, variables)
-    variableSetter(variablesMain)
-    adder(binding, variablesMain)
-  }
-
-  bindingStream.on('data', handleData)
-  bindingStream.on('end', () => bindingStreamSetter(undefined))
-  bindingStream.on('error', handlequeryResultFail)
-  bindingStreamSetter(bindingStream)
-}
 
 function generateColumn(variable){
   let variableSplitted = variable.split('_')
@@ -162,25 +136,6 @@ async function executequery(query){
   }
 }
 
-
-/**
- * A function that given a BindingStream processes every result as a stream based on the functions provided. 
- * @param {BindingStream} execution   
- * @param {Function} adder a function which handles what happens with every variable result  
- * @param {Function} variableSetter a function which handles what happens with every variable name 
- */
-async function handlequeryExecution(execution){
-  try{
-    let bindingStream = await execution 
-    
-    return bindingStream
-  }
-  catch(error){
-    handleBindingStreamFail(error)
-  }
-   
-}
-
 function extendList(list, newList){
   for(let value of newList){
     if(!list.includes(value)){
@@ -188,22 +143,6 @@ function extendList(list, newList){
     }
   }
   return list
-}
-
-/**
- * Handles the event whenever an error occurs during query execution. 
- * @param {Error} error object returned by the communica engine whenever a problem occurs during query execution.
- */
-function handlequeryResultFail(error){
-  console.error(error)
-}
-
-/**
- * Handles the event whenever the creation of a BindingStream fails. 
- * @param {Error} error error object returned by the communica engine whenever the creation of a BindingStream fails.  
- */
-function handleBindingStreamFail(error){
-  console.error(error)
 }
 
 /**
