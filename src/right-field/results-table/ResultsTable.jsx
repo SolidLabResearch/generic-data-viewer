@@ -35,7 +35,6 @@ function ResultsTable(props){
     let adder = (item, variables) => setResults((old) => {
       let newValues = []
       for(let variable of variables){
-        console.log(variable)
         let value = item[variable] ? item[variable] : ""
         let type = variable.split('_')[1]
         let componentCaller = typeRepresentationMapper[type] 
@@ -95,7 +94,6 @@ function configureQueryWorker(adder, variableSetter, setIsQuerying){
       case 'result':
         let binding = JSON.parse(data.result)
         let entries = binding.entries 
-        console.log(entries)
         adder(entries, variablesMain)
           
         break; 
