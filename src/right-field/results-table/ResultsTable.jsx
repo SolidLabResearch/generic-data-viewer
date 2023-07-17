@@ -1,13 +1,14 @@
 import "./ResultsTable.css"
 
-import config from "../../config.json"
 import { useEffect, useState } from "react";
 import { Grid, _ } from 'gridjs-react';
 import "gridjs/dist/theme/mermaid.min.css";
 import {typeRepresentationMapper, typeSortMapper} from '../../typeMapper.js'
+import QueryWorker from "worker-loader!../../workers/worker"
+
+import config from "../../config.json"
 
 config = JSON.parse(JSON.stringify(config))
-
 if(!config.queryFolder){
   config.queryFolder = './'
 }
@@ -16,13 +17,14 @@ if(config.queryFolder.substring(config.queryFolder.length-1) !== '/'){
   config.queryFolder = `${config.queryFolder}/`
 }
 
-const QueryEngine = require('@comunica/query-sparql').QueryEngine;
-const myEngine = new QueryEngine()
+
+const queryWorker = new QueryWorker()
+configureQueryWorker(queryWorker)
 
 
 /**
  * 
- * @param {query} props.query The query (as defined in the config file) that should be executed and results displayed in the table. 
+ * @param {query} props.query The query undefined(as defined in the config file) that should be executed and results displayed in the table. 
  * @returns {Component} A React component giving a structural representation of the query results.  
  */
 function ResultsTable(props){
@@ -31,30 +33,29 @@ function ResultsTable(props){
     const [variables, setVariables] = useState([])
     const [bindingStream, setBindingStream] = useState(undefined)
 
+
     let adder = (item, variables) => setResults((old) => {
       let newValues = []
       for(let variable of variables){
-        let value = item.get(variable) ? item.get(variable) : ""
+        let value = item[variable] ? item[variable] : ""
         let type = variable.split('_')[1]
         let componentCaller = typeRepresentationMapper[type] 
-        componentCaller = componentCaller ? componentCaller : (text) => text.id
+        componentCaller = componentCaller ? componentCaller : (text) => text.value
         newValues.push(componentCaller(value))
       }
       
       return [...old, newValues]}
       
     )
+    
+    configureQueryWorker(adder, setVariables)
 
     let onqueryChanged = async () => {
-      if(bindingStream){
-        removeBindingStreamListeners(bindingStream)
-      }
       setResults([])
       setVariables([])
       if(selectedquery){
         try{
-          let newBindingStream = await executequery(selectedquery)
-          configureBindingStream(newBindingStream, setVariables, adder, setBindingStream)
+            executequery(selectedquery)
         }
         catch(error){
 
@@ -90,6 +91,27 @@ function removeBindingStreamListeners(bindingStream){
   bindingStream.removeAllListeners('data')
   bindingStream.removeAllListeners('end')
   bindingStream.removeAllListeners('error')
+}
+
+function configureQueryWorker(adder, variableSetter){
+  queryWorker.onmessage = ({data}) => {
+    switch (data.type){
+      case 'result':
+        let binding = JSON.parse(data.result)
+        let entries = binding.entries 
+        let variables = []
+        let keys = Object.keys(binding.entries)
+        for(let key of keys ){
+            variables.push(key)
+        }   
+        let variablesMain = []
+        variableSetter((old) => {
+          variablesMain = extendList(old, variables)
+          adder(entries, variablesMain)
+          return variablesMain
+        })
+    }
+  }
 }
 
 async function configureBindingStream(bindingStream, variableSetter, adder, bindingStreamSetter){
@@ -132,11 +154,8 @@ function generateColumn(variable){
 async function executequery(query){
   try{
     let result = await fetch(`${config.queryFolder}${query.queryLocation}`)
-    let queryText = await result.text()
-    return handlequeryExecution(myEngine.queryBindings(
-      queryText, {sources:query.sources}
-
-    ))
+    query.queryText = await result.text()
+    queryWorker.postMessage({selectedQuery: query})
   }
   catch(error){
     handlequeryFetchFail(error)
