@@ -33,6 +33,7 @@ function ResultsTable(props){
     const [results, setResults] = useState([])
     const [variables, setVariables] = useState([])
     const containerRef = useRef()
+    const [isQuerying, setQuerying] = useState(false)
 
     if(containerRef.current){
       console.log(containerRef.current.wrapper.current)
@@ -93,6 +94,28 @@ function ResultsTable(props){
     )
 }
 
+function configureQueryWorker(adder, variableSetter){
+  queryWorker.onmessage = ({data}) => {
+    switch (data.type){
+      case 'result':
+        let binding = JSON.parse(data.result)
+        let entries = binding.entries 
+        let variables = []
+        let keys = Object.keys(binding.entries)
+        for(let key of keys ){
+            variables.push(key)
+        }   
+        let variablesMain = []
+        variableSetter((old) => {
+          variablesMain = extendList(old, variables)
+          adder(entries, variablesMain)
+          return variablesMain
+        })
+    }
+  }
+}
+
+
 function generateColumn(variable){
   let variableSplitted = variable.split('_')
   return {
@@ -121,25 +144,6 @@ async function executequery(query){
   }
 }
 
-
-/**
- * A function that given a BindingStream processes every result as a stream based on the functions provided. 
- * @param {BindingStream} execution   
- * @param {Function} adder a function which handles what happens with every variable result  
- * @param {Function} variableSetter a function which handles what happens with every variable name 
- */
-async function handlequeryExecution(execution){
-  try{
-    let bindingStream = await execution 
-    
-    return bindingStream
-  }
-  catch(error){
-    handleBindingStreamFail(error)
-  }
-   
-}
-
 function extendList(list, newList){
   for(let value of newList){
     if(!list.includes(value)){
@@ -147,22 +151,6 @@ function extendList(list, newList){
     }
   }
   return list
-}
-
-/**
- * Handles the event whenever an error occurs during query execution. 
- * @param {Error} error object returned by the communica engine whenever a problem occurs during query execution.
- */
-function handlequeryResultFail(error){
-  console.error(error)
-}
-
-/**
- * Handles the event whenever the creation of a BindingStream fails. 
- * @param {Error} error error object returned by the communica engine whenever the creation of a BindingStream fails.  
- */
-function handleBindingStreamFail(error){
-  console.error(error)
 }
 
 /**
