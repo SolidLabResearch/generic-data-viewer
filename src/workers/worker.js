@@ -25,7 +25,12 @@ async function executequery(query){
     }
   }
   
-  
+const queryTypeHandlers = {
+  "bindings": configureBindingStream,
+  "quads": configureQuadStream,
+  "boolean": configureBool
+}
+
   /**
    * A function that given a BindingStream processes every result as a stream based on the functions provided. 
    * @param {BindingStream} execution   
@@ -38,19 +43,7 @@ async function executequery(query){
       let metadata = await execution.metadata()
       postMessage({type: 'metadata', metadata: {variables: metadata.variables, queryType: execution.resultType}})
 
-      switch (execution.resultType){
-        case "bindings": 
-          configureBindingStream(await execution.execute())
-          break; 
-        
-        case "quads": 
-          configureQuadStream(await execution.execute())
-          break
-        case "boolean":
-          postMessage({type: 'result', result : await execution.execute()})
-          postMessage({type: 'end', message: "blank"})     
-          break   
-      }
+      queryTypeHandlers[execution.resultType](await execution.execute())
 
     }
     catch(error){
@@ -58,6 +51,11 @@ async function executequery(query){
     }
      
   }
+
+function configureBool(result){
+  postMessage({type: 'result', result: result})
+  postMessage({type: "end", message: "blank"})
+}
 
 function configureStream(stream, dataParser = (data) => {return JSON.stringify(data)}){
   stream.on('data', (data) => {
