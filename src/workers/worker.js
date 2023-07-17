@@ -7,8 +7,6 @@ onmessage = (selectedQuery) => {
     executequery(selectedQuery.data.selectedQuery)
   }
 
-
-
 /**
  * A function that executes a given query and processes every result as a stream based on the functions provided. 
  * @param {query} query the query which gets executed 
@@ -50,7 +48,8 @@ async function executequery(query){
           break
         case "boolean":
           postMessage({type: 'result', result : await execution.execute()})
-          postMessage({type: 'end', message: "blank"})        
+          postMessage({type: 'end', message: "blank"})     
+          break   
       }
 
     }
