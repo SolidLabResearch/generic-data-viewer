@@ -41,7 +41,8 @@ The configuration file follows a simple structure.
 
 ### Adding variable type
 
-When executing a query, it gives us either a URL or a literal value. These URLs could reference to anything e.g. a picture, spredsheet, resume, and so on.
+When executing a query, it gives us either a URL, a literal value or [a blank node](https://www.w3.org/TR/rdf12-concepts/#section-blank-nodes).
+These URLs could reference to anything e.g. a picture, spredsheet, resume, and so on.
 Also literals can be lots of things e.g. a float, integer, string, birthdate, price, etc.  
 
 By clarifying what the expected type is of the query result corresponding to a given variable we can fully interpret how we can display and represent the result. 
