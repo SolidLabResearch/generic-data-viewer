@@ -12,7 +12,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "webpack": "^5.88.1",
+    "webpack-cli": "^5.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -24,7 +26,10 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "import/no-webpack-loader-syntax": "off"
+    }
   },
   "browserslist": {
     "production": [
@@ -40,6 +45,7 @@
   },
   "devDependencies": {
     "assert": "^2.0.0",
-    "buffer": "^6.0.3"
+    "buffer": "^6.0.3",
+    "worker-loader": "^3.0.8"
   }
 }
