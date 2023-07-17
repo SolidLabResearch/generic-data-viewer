@@ -54,12 +54,7 @@ function ResultsTable(props){
       setResults([])
       setVariables([])
       if(selectedquery){
-        try{
-            executequery(selectedquery)
-        }
-        catch(error){
-
-        }
+        executequery(selectedquery)
       }
     }
 
