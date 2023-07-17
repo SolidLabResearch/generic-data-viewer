@@ -41,9 +41,16 @@ async function executequery(query){
       postMessage({type: 'metadata', metadata: {variables: metadata.variables, queryType: execution.resultType}})
 
       switch (execution.resultType){
-        case "bindings": {
+        case "bindings": 
           configureBindingStream(await execution.execute())
-        }
+          break; 
+        
+        case "quads": 
+          configureQuadStream(await execution.execute())
+          break
+        case "boolean":
+          postMessage({type: 'result', result : await execution.execute()})
+          postMessage({type: 'end', message: "blank"})        
       }
 
     }
@@ -53,18 +60,26 @@ async function executequery(query){
      
   }
 
+function configureStream(stream, dataParser = (data) => {return JSON.stringify(data)}){
+  stream.on('data', (data) => {
+    postMessage({type: 'result', result: dataParser(data)})
+  })
+
+  stream.on('error', (e) => {
+      postMessage({type: "error", error: e})
+  })
+
+  stream.on('end', () => {
+      postMessage({type: "end", message: "blank"})
+  })
+}
+
+function configureQuadStream(quadStream){
+    configureStream(quadStream)
+}
+
 function configureBindingStream(bindingStream){
-    bindingStream.on('data', (data) => {
-        postMessage({type: 'result', result: JSON.stringify(data)})
-    })
-
-    bindingStream.on('error', (e) => {
-        postMessage({type: "error", error: e})
-    })
-
-    bindingStream.on('end', () => {
-        postMessage({type: "end", message: "blank"})
-    })
+    configureStream(bindingStream)
 }
 
   
