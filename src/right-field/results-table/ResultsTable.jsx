@@ -1,9 +1,9 @@
 import "./ResultsTable.css"
 
 import { useEffect, useState } from "react";
-import { Grid } from 'gridjs-react';
+import { Grid, _ } from 'gridjs-react';
 import "gridjs/dist/theme/mermaid.min.css";
-import {typeSortMapper} from '../../typeMapper.js'
+import {typeRepresentationMapper, typeSortMapper} from '../../typeMapper.js'
 import QueryWorker from "worker-loader!../../workers/worker"
 
 import config from "../../config.json"
@@ -35,9 +35,13 @@ function ResultsTable(props){
     let adder = (item, variables) => setResults((old) => {
       let newValues = []
       for(let variable of variables){
-        let value = item[variable] 
-        newValues.push(value)
+        let value = item[variable] ? item[variable] : ""
+        let type = variable.split('_')[1]
+        let componentCaller = typeRepresentationMapper[type] 
+        componentCaller = componentCaller ? componentCaller : (text) => text.value
+        newValues.push(componentCaller(value))
       }
+      
       return [...old, newValues]}
       
     )
@@ -88,7 +92,10 @@ function configureQueryWorker(adder, variableSetter, setIsQuerying){
   queryWorker.onmessage = ({data}) => {
     switch (data.type){
       case 'result':
-        adder(data.result, variablesMain)
+        let binding = JSON.parse(data.result)
+        let entries = binding.entries 
+        adder(entries, variablesMain)
+          
         break; 
       case "end":
         setIsQuerying(false)
@@ -111,8 +118,6 @@ function generateColumn(variable){
     }
   }
 }
-
-
 
 /**
  * A function that executes a given query and processes every result as a stream based on the functions provided. 
