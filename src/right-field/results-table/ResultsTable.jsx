@@ -38,7 +38,7 @@ function ResultsTable(props) {
 
   let adder = adderFunctionMapper["bindings"](setResults)
 
-  const onqueryChanged = () => {
+  const onQueryChanged = () => {
     if (selectedquery) {
       if (isQuerying) {
         queryWorker.terminate()
@@ -52,11 +52,11 @@ function ResultsTable(props) {
   }
 
   if (props.refreshButton.current) {
-    props.refreshButton.current.onclick = onqueryChanged
+    props.refreshButton.current.onclick = onQueryChanged
   }
 
   useEffect(() => {
-    onqueryChanged()
+    onQueryChanged()
   }, [selectedquery])
 
   return (
