@@ -20,12 +20,11 @@ let queryWorker = undefined
 
 /**
  * 
- * @param {query} props.query The query undefined(as defined in the config file) that should be executed and results displayed in the table. 
- * @param {query} props.query The query undefined(as defined in the config file) that should be executed and results displayed in the table. 
+ * @param {query} props.selectedQuery The query (as defined in the config file) that should be executed and results displayed in the table. 
  * @returns {Component} A React component giving a structural representation of the query results.  
  */
 function ResultsTable(props){
-    const selectedquery = props.selectedquery
+    const selectedquery = props.selectedQuery
     const [results, setResults] = useState([])
     const [variables, setVariables] = useState([])
     const containerRef = useRef()
@@ -90,6 +89,13 @@ function ResultsTable(props){
     )
 }
 
+
+/**
+ * 
+ * @param {Function} adder function which processes the result, takes the result as argument
+ * @param {Function} variableSetter setter function for the variables, takes a list of variable names
+ * @param {Function} setIsQuerying boolean setter function for whether the worker is still executing a query or not
+ */
 function configureQueryWorker(adder, variableSetter, setIsQuerying){
   queryWorker = new QueryWorker()
   let variablesMain = []
@@ -113,7 +119,12 @@ function configureQueryWorker(adder, variableSetter, setIsQuerying){
   }
 }
 
-
+/**
+ * 
+ * @param {String} variable a variable name 
+ * @param {Integer} size total amount of variables
+ * @returns {Object} a configuration object corresponding to a column, following GridJS config. 
+ */
 function generateColumn(variable, size){
   let variableSplitted = variable.split('_')
   return {
@@ -128,8 +139,7 @@ function generateColumn(variable, size){
 /**
  * A function that executes a given query and processes every result as a stream based on the functions provided. 
  * @param {query} query the query which gets executed 
- * @param {Function} adder a function which handles what happens with every variable result  
- * @param {Function} variableSetter a function which handles what happens with every variable name 
+ * @param {Worker} queryWorker the worker which will be used to execute the given query
 */
 async function executequery(query, queryWorker){
   try{

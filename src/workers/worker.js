@@ -10,8 +10,6 @@ onmessage = (selectedQuery) => {
 /**
  * A function that executes a given query and processes every result as a stream based on the functions provided. 
  * @param {query} query the query which gets executed 
- * @param {Function} adder a function which handles what happens with every variable result  
- * @param {Function} variableSetter a function which handles what happens with every variable name 
 */
 async function executequery(query){
     try{
@@ -32,10 +30,8 @@ const queryTypeHandlers = {
 }
 
   /**
-   * A function that given a BindingStream processes every result as a stream based on the functions provided. 
-   * @param {BindingStream} execution   
-   * @param {Function} adder a function which handles what happens with every variable result  
-   * @param {Function} variableSetter a function which handles what happens with every variable name 
+   * A function that given a QueryType send every result as a stream to the main thread. 
+   * @param {Promise<QueryType>} execution the promise of a query execution 
    */
   async function handlequeryExecution(execution){
     try{
@@ -52,11 +48,20 @@ const queryTypeHandlers = {
      
   }
 
+/**
+ * Configures how a boolean query gets processed and sendt to the main thread
+ * @param {Boolean} result the result of a boolean query 
+ */
 function configureBool(result){
   postMessage({type: 'result', result: result})
   postMessage({type: "end", message: "blank"})
 }
 
+/**
+ * Configures how a query resulting in a stream of quads or bindings should be processed and sent to the main thread
+ * @param {BindingStream || (AsyncIterator<Quad> & ResultStream<Quad>>)} stream 
+ * @param {Function} dataParser Parses the values from the stream seperately as they should be sent to main thread  
+ */
 function configureStream(stream, dataParser = (data) => {return JSON.stringify(data)}){
   stream.on('data', (data) => {
     postMessage({type: 'result', result: dataParser(data)})
@@ -71,27 +76,35 @@ function configureStream(stream, dataParser = (data) => {return JSON.stringify(d
   })
 }
 
+/**
+ * Configures how a query resulting in a stream of quads should be processed and sent to the main thread
+ * @param {AsyncIterator<Quad> & ResultStream<Quad>>} quadStream a stream of Quads  
+ */
 function configureQuadStream(quadStream){
     configureStream(quadStream)
 }
 
+/**
+ * Configures how a query resulting in a stream of bindings should be processed and sent to the main thread
+ * @param {BindingStream} bindingStream a stream of  Bindings 
+ */
 function configureBindingStream(bindingStream){
     configureStream(bindingStream)
 }
 
-  
-  /**
-   * Handles the event whenever the creation of a BindingStream fails. 
-   * @param {Error} error error object returned by the communica engine whenever the creation of a BindingStream fails.  
-   */
-  function handleBindingStreamFail(error){
-    console.error(error)
-  }
-  
-  /**
-   * Handles the event whenever the fetching of a query fails.
-   * @param {Error} error the object returned by the fetch API whenever the fetch fails. 
-   */
-  function handlequeryFetchFail(error){
-    console.error(error)
-  }
+
+/**
+ * Handles the event whenever the creation of a BindingStream fails. 
+ * @param {Error} error error object returned by the communica engine whenever the creation of a BindingStream fails.  
+ */
+function handleBindingStreamFail(error){
+  console.error(error)
+}
+
+/**
+ * Handles the event whenever the fetching of a query fails.
+ * @param {Error} error the object returned by the fetch API whenever the fetch fails. 
+ */
+function handlequeryFetchFail(error){
+  console.error(error)
+}
