@@ -38,7 +38,7 @@ function ResultsTable(props){
   
     let adder = adderFunctionMapper["bindings"](setResults)
 
-    let onqueryChanged = () => {
+    const onqueryChanged = () => {
       if(selectedquery){
         if(isQuerying){
           queryWorker.terminate()
