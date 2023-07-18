@@ -18,8 +18,6 @@ if(config.queryFolder.substring(config.queryFolder.length-1) !== '/'){
 }
 
 
-let queryWorker = undefined
-
 /**
  * 
  * @param {query} props.query The query undefined(as defined in the config file) that should be executed and results displayed in the table. 
@@ -30,6 +28,7 @@ function ResultsTable(props){
     const [results, setResults] = useState([])
     const [variables, setVariables] = useState([])
     const [isQuerying, setQuerying] = useState(false)
+    const [queryWorker, setQueryWorker] = useState(undefined) 
 
 
     let adder = (item, variables) => setResults((old) => {
@@ -46,19 +45,19 @@ function ResultsTable(props){
       
     )
     
-    configureQueryWorker(adder, setVariables, setQuerying)
+    useEffect(() => {configureQueryWorker(setQueryWorker, adder, setVariables, setQuerying)}, [])
 
     let onqueryChanged = () => {
       
       if(selectedquery){
         if(isQuerying){
           queryWorker.terminate()
-          configureQueryWorker(adder, setVariables, setQuerying)
+          configureQueryWorker(setQueryWorker, adder, setVariables, setQuerying)
         }
         setResults([])
         setVariables([])
         setQuerying(true)
-        executequery(selectedquery)
+        executequery(selectedquery, queryWorker)
       }
     }
 
@@ -86,8 +85,9 @@ function ResultsTable(props){
     )
 }
 
-function configureQueryWorker(adder, variableSetter, setIsQuerying){
-  queryWorker = new QueryWorker()
+function configureQueryWorker(workerSetter, adder, variableSetter, setIsQuerying){
+  let queryWorker = new QueryWorker()
+  workerSetter(queryWorker)
   let variablesMain = []
   queryWorker.onmessage = ({data}) => {
     switch (data.type){
@@ -103,6 +103,7 @@ function configureQueryWorker(adder, variableSetter, setIsQuerying){
       case "metadata": {
         variablesMain = data.metadata.variables.map(val => val.value)
         variableSetter(variablesMain)
+        break; 
       }
     }
   }
@@ -125,7 +126,7 @@ function generateColumn(variable){
  * @param {Function} adder a function which handles what happens with every variable result  
  * @param {Function} variableSetter a function which handles what happens with every variable name 
 */
-async function executequery(query){
+async function executequery(query, queryWorker){
   try{
     let result = await fetch(`${config.queryFolder}${query.queryLocation}`)
     query.queryText = await result.text()
