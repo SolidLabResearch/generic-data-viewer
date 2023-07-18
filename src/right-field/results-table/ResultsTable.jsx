@@ -17,6 +17,7 @@ if(config.queryFolder.substring(config.queryFolder.length-1) !== '/'){
   config.queryFolder = `${config.queryFolder}/`
 }
 
+let queryWorker = undefined
 
 /**
  * 
@@ -28,7 +29,6 @@ function ResultsTable(props){
     const [results, setResults] = useState([])
     const [variables, setVariables] = useState([])
     const [isQuerying, setQuerying] = useState(false)
-    const [queryWorker, setQueryWorker] = useState(undefined) 
 
 
     let adder = (item, variables) => setResults((old) => {
@@ -45,18 +45,21 @@ function ResultsTable(props){
       
     )
     
-    useEffect(() => {configureQueryWorker(setQueryWorker, adder, setVariables, setQuerying)}, [])
+    useEffect(() => {configureQueryWorker(adder, setVariables, setQuerying)}, [])
 
     let onqueryChanged = () => {
       
       if(selectedquery){
+        let prevWorker = queryWorker
         if(isQuerying){
           queryWorker.terminate()
-          configureQueryWorker(setQueryWorker, adder, setVariables, setQuerying)
+          configureQueryWorker(adder, setVariables, setQuerying)
         }
+        console.log(queryWorker)
         setResults([])
         setVariables([])
         setQuerying(true)
+        console.log("starting query")
         executequery(selectedquery, queryWorker)
       }
     }
@@ -85,9 +88,9 @@ function ResultsTable(props){
     )
 }
 
-function configureQueryWorker(workerSetter, adder, variableSetter, setIsQuerying){
-  let queryWorker = new QueryWorker()
-  workerSetter(queryWorker)
+function configureQueryWorker(adder, variableSetter, setIsQuerying){
+  queryWorker = new QueryWorker()
+  console.log("set query worker")
   let variablesMain = []
   queryWorker.onmessage = ({data}) => {
     switch (data.type){
@@ -130,6 +133,7 @@ async function executequery(query, queryWorker){
   try{
     let result = await fetch(`${config.queryFolder}${query.queryLocation}`)
     query.queryText = await result.text()
+    console.log(query.queryText)
     queryWorker.postMessage({selectedQuery: query})
   }
   catch(error){
