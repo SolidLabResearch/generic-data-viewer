@@ -24,7 +24,7 @@ let queryWorker = undefined
  * @returns {Component} A React component giving a structural representation of the query results.  
  */
 function ResultsTable(props){
-    const selectedquery = props.selectedQuery
+    const selectedquery = props.selectedquery
     const [results, setResults] = useState([])
     const [variables, setVariables] = useState([])
     const containerRef = useRef()
@@ -33,23 +33,10 @@ function ResultsTable(props){
     if(containerRef.current){
       containerRef.current.wrapper.current.className = "grid-wrapper";
     }  
-
-    let adder = (item, variables) => setResults((old) => {
-      let newValues = []
-      for(let variable of variables){
-        let value = item[variable] ? item[variable] : ""
-        let type = variable.split('_')[1]
-        let componentCaller = typeRepresentationMapper[type] 
-        componentCaller = componentCaller ? componentCaller : (text) => text.value
-        newValues.push(componentCaller(value))
-      }
-      
-      return [...old, newValues]}
-      
-    )
     
     useEffect(() => {configureQueryWorker(adder, setVariables, setQuerying)}, [])
-    
+  
+    let adder = adderFunctionMapper["bindings"](setResults)
 
     let onqueryChanged = () => {
       if(selectedquery){
@@ -89,6 +76,28 @@ function ResultsTable(props){
     )
 }
 
+const adderFunctionMapper = {
+  "bindings": (setter) => {return (item, variable) => bindingStreamAdder(item, variable, setter)}
+}
+
+/**
+ * Processes a result entry as it should look in the result table, and adds it to the table entries
+ * @param {Object} item the entry which should be processed 
+ * @param {Array<String>} variables A list of all the variables in the table 
+ * @param {Function} setter function to set the table entries.
+ */
+function bindingStreamAdder(item, variables, setter){
+  let newValues = []
+  for(let variable of variables){
+    let value = item[variable] ? item[variable] : ""
+    let type = variable.split('_')[1]
+    let componentCaller = typeRepresentationMapper[type] 
+    componentCaller = componentCaller ? componentCaller : (text) => text.value
+    newValues.push(componentCaller(value))
+  }
+  
+  setter(old => {return [...old, newValues]})
+}
 
 /**
  * 
@@ -144,8 +153,6 @@ function generateColumn(variable, size){
 async function executequery(query, queryWorker){
   try{
     let result = await fetch(`${config.queryFolder}${query.queryLocation}`)
-    query.queryText = await result.text()
-    queryWorker.postMessage({selectedQuery: query})
     query.queryText = await result.text()
     queryWorker.postMessage({selectedQuery: query})
   }
