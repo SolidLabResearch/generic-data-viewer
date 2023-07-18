@@ -31,7 +31,6 @@ function ResultsTable(props){
     const [isQuerying, setQuerying] = useState(false)
 
     if(containerRef.current){
-      console.log(containerRef.current.wrapper.current)
       containerRef.current.wrapper.current.className = "grid-wrapper";
     }  
 
