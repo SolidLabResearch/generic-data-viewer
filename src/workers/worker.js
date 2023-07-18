@@ -1,8 +1,7 @@
 import { QueryEngine } from "@comunica/query-sparql"
-import { typeRepresentationMapper } from "../typeMapper"
+
 
 let myEngine = new QueryEngine()
-let variables = []
 
 onmessage = (selectedQuery) => {
     executequery(selectedQuery.data.selectedQuery)
@@ -42,8 +41,7 @@ const queryTypeHandlers = {
     try{
       execution = await execution 
       let metadata = await execution.metadata()
-      variables = metadata.variables
-      postMessage({type: 'metadata', metadata: {variables: variables, queryType: execution.resultType}})
+      postMessage({type: 'metadata', metadata: {variables: metadata.variables, queryType: execution.resultType}})
 
       queryTypeHandlers[execution.resultType](await execution.execute())
 
@@ -59,7 +57,7 @@ function configureBool(result){
   postMessage({type: "end", message: "blank"})
 }
 
-function configureStream(stream, dataParser = (data) => {return parseStreamEntry(data)}){
+function configureStream(stream, dataParser = (data) => {return JSON.stringify(data)}){
   stream.on('data', (data) => {
     postMessage({type: 'result', result: dataParser(data)})
   })
@@ -81,20 +79,7 @@ function configureBindingStream(bindingStream){
     configureStream(bindingStream)
 }
 
-function parseStreamEntry(entry){
-  let values = {}
-  for(let variable of variables){
-    variable = variable.value 
-    let value = entry.get(variable) ? entry.get(variable) : ""
-    let type = variable.split('_')[1]
-    let componentCaller = typeRepresentationMapper[type] 
-    componentCaller = componentCaller ? componentCaller : (text) => text.id
-    values[variable] = componentCaller(value)
-  }
-  return values 
-}  
-
-
+  
   /**
    * Handles the event whenever the creation of a BindingStream fails. 
    * @param {Error} error error object returned by the communica engine whenever the creation of a BindingStream fails.  
