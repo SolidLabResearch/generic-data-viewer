@@ -2,12 +2,10 @@ import "./ResultsTable.css"
 
 import config from "../../config.json"
 import { useEffect, useRef, useState } from "react";
-import { Grid, _, _ } from 'gridjs-react';
+import { Grid, _ } from 'gridjs-react';
 import "gridjs/dist/theme/mermaid.min.css";
 import {typeRepresentationMapper, typeSortMapper} from '../../typeMapper.js'
 import QueryWorker from "worker-loader!../../workers/worker"
-
-import config from "../../config.json"
 
 config = JSON.parse(JSON.stringify(config))
 if(!config.queryFolder){
@@ -116,7 +114,7 @@ function configureQueryWorker(adder, variableSetter, setIsQuerying){
 }
 
 
-function generateColumn(variable){
+function generateColumn(variable, size){
   let variableSplitted = variable.split('_')
   return {
     name: variableSplitted[0],
