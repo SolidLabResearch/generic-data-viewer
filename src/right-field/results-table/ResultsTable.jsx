@@ -17,7 +17,6 @@ if(config.queryFolder.substring(config.queryFolder.length-1) !== '/'){
 }
 
 let queryWorker = undefined
-let queryWorker = undefined
 
 /**
  * 
@@ -40,10 +39,8 @@ function ResultsTable(props){
       let newValues = []
       for(let variable of variables){
         let value = item[variable] ? item[variable] : ""
-        let value = item[variable] ? item[variable] : ""
         let type = variable.split('_')[1]
         let componentCaller = typeRepresentationMapper[type] 
-        componentCaller = componentCaller ? componentCaller : (text) => text.value
         componentCaller = componentCaller ? componentCaller : (text) => text.value
         newValues.push(componentCaller(value))
       }
@@ -54,24 +51,15 @@ function ResultsTable(props){
     
     useEffect(() => {configureQueryWorker(adder, setVariables, setQuerying)}, [])
     
-    useEffect(() => {configureQueryWorker(adder, setVariables, setQuerying)}, [])
 
     let onqueryChanged = () => {
-      
-      
       if(selectedquery){
-        if(isQuerying){
-          queryWorker.terminate()
-          configureQueryWorker(adder, setVariables, setQuerying)
-        }
         if(isQuerying){
           queryWorker.terminate()
           configureQueryWorker(adder, setVariables, setQuerying)
         }
         setResults([])
         setVariables([])
-        setQuerying(true)
-        executequery(selectedquery, queryWorker)
         setQuerying(true)
         executequery(selectedquery, queryWorker)
       }
@@ -144,7 +132,6 @@ function generateColumn(variable, size){
  * @param {Function} variableSetter a function which handles what happens with every variable name 
 */
 async function executequery(query, queryWorker){
-async function executequery(query, queryWorker){
   try{
     let result = await fetch(`${config.queryFolder}${query.queryLocation}`)
     query.queryText = await result.text()
@@ -166,4 +153,4 @@ function handlequeryFetchFail(error){
 }
 
 
-export default ResultsTable; 
+export default ResultsTable
