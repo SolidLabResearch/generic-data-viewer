@@ -48,7 +48,7 @@ async function handleQueryExecution(execution) {
 }
 
 /**
- * Configures how a boolean query gets processed and sendt to the main thread
+ * Configures how a boolean query gets processed and sent to the main thread
  * @param {Boolean} result the result of a boolean query 
  */
 function configureBool(result) {
@@ -59,7 +59,7 @@ function configureBool(result) {
 /**
  * Configures how a query resulting in a stream of quads or bindings should be processed and sent to the main thread
  * @param {BindingStream || (AsyncIterator<Quad> & ResultStream<Quad>>)} stream 
- * @param {Function} dataParser Parses the values from the stream seperately as they should be sent to main thread  
+ * @param {Function} dataParser Parses the values from the stream separately as they should be sent to main thread  
  */
 function configureStream(stream, dataParser = (data) => { return JSON.stringify(data) }) {
   stream.on('data', (data) => {
