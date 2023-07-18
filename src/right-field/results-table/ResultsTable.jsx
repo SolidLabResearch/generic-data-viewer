@@ -82,10 +82,6 @@ function ResultsTable(props){
     )
 }
 
-const messageHandlers = {
-
-}
-
 function configureQueryWorker(adder, variableSetter, setIsQuerying){
   queryWorker = new QueryWorker()
   let variablesMain = []
