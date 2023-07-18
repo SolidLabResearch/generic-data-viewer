@@ -1,9 +1,11 @@
 import "./ResultsTable.css"
 
 import config from "../../config.json"
-import { useEffect, useState } from "react";
-import { Grid } from 'gridjs-react';
+import { useEffect, useRef, useState } from "react";
+import { Grid, _ } from 'gridjs-react';
 import "gridjs/dist/theme/mermaid.min.css";
+import {typeRepresentationMapper, typeSortMapper} from '../../typeMapper.js'
+
 config = JSON.parse(JSON.stringify(config))
 
 if(!config.queryFolder){
@@ -17,6 +19,7 @@ if(config.queryFolder.substring(config.queryFolder.length-1) !== '/'){
 const QueryEngine = require('@comunica/query-sparql').QueryEngine;
 const myEngine = new QueryEngine()
 
+
 /**
  * 
  * @param {query} props.query The query (as defined in the config file) that should be executed and results displayed in the table. 
@@ -26,19 +29,32 @@ function ResultsTable(props){
     const selectedquery = props.selectedquery
     const [results, setResults] = useState([])
     const [variables, setVariables] = useState([])
-    let adder = (item) => setResults((old) => {
+    const containerRef = useRef()
+
+    if(containerRef.current){
+      console.log(containerRef.current.wrapper.current)
+      containerRef.current.wrapper.current.className = "grid-wrapper";
+    }  
+
+    let adder = (item, variables) => setResults((old) => {
       let newValues = []
       for(let variable of variables){
-        newValues.push(item.get(variable) ? item.get(variable).id : "")
+        let value = item.get(variable) ? item.get(variable) : ""
+        let type = variable.split('_')[1]
+        let componentCaller = typeRepresentationMapper[type] 
+        componentCaller = componentCaller ? componentCaller : (text) => text.id
+        newValues.push(componentCaller(value))
       }
+      
       return [...old, newValues]}
       
     )
-    let variableAdder = (newList) => setVariables((old) => [...new Set([...newList, ...old])])
+
     let onqueryChanged = () => {
       if(selectedquery){
         setResults([])
-        executequery(selectedquery, adder, variableAdder)
+        setVariables([])
+        executequery(selectedquery, adder, setVariables)
       }
     }
 
@@ -54,14 +70,28 @@ function ResultsTable(props){
         <div className="results-table">
             {!selectedquery && <label>Please select a query.</label>}
             {selectedquery && 
-            <Grid style={{td: {"text-align": "center"}, th: {"text-align": "center"}}} 
+            <Grid style={{td: {"text-align": "center"}, th: {"text-align": "center"}, container: {"margin": "0"}}}
+            className={{tbody: "grid-body"}}
             data={results} 
+            sort={true}
+            autowidth={false}
             fixedHeader={true}
-            height={"100%"}
-            autoWidth="true" columns={variables}/>
+            ref={containerRef}
+            columns={variables.map(column => {return generateColumn(column, variables.length)})}/>
             }
         </div>
     )
+}
+
+function generateColumn(variable, size){
+  let variableSplitted = variable.split('_')
+  return {
+    name: variableSplitted[0],
+    sort: {
+      compare: typeSortMapper[variableSplitted[1]]
+    },
+    width: `${100/size}%`
+  }
 }
 
 /**
@@ -94,18 +124,18 @@ async function executequery(query, adder, variableSetter){
 async function handlequeryExecution(execution, adder, variableSetter){
   try{
     let bindingStream = await execution 
+    let variablesMain = []
     bindingStream.on('data', (binding) => {
-      let triple = []
       let variables = []
       let keys = binding.keys()
       let key = keys.next()
       while(!key.done){
-          triple.push(binding.get(key.value.value).id)
           variables.push(key.value.value)
           key = keys.next()
       }   
-      variableSetter(variables)
-      adder(binding)
+      variablesMain = extendList(variablesMain, variables)
+      variableSetter(variablesMain)
+      adder(binding, variablesMain)
     })
 
     bindingStream.on('error', handlequeryResultFail)
@@ -114,6 +144,15 @@ async function handlequeryExecution(execution, adder, variableSetter){
     handleBindingStreamFail(error)
   }
    
+}
+
+function extendList(list, newList){
+  for(let value of newList){
+    if(!list.includes(value)){
+      list.push(value)
+    }
+  }
+  return list
 }
 
 /**
