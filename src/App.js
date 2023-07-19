@@ -2,7 +2,8 @@ import "./App.css"
 import SelectionTable from "./selection-table/SelectionTable";
 import RightField from "./right-field/RightField";
 import config from "./config.json" 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getDefaultSession, handleIncomingRedirect } from "@inrupt/solid-client-authn-browser";
 
 config = JSON.parse(JSON.stringify(config))
 
@@ -13,6 +14,22 @@ config = JSON.parse(JSON.stringify(config))
  */
 function App() {
   const [selectedQuery, setSelectedQuery] = useState(undefined)
+  const session = getDefaultSession()
+  const [loggedIn, setLoggedIn] = useState()
+  useEffect(() => {
+    session.onLogin(() => setLoggedIn(true))
+    session.onLogout(() => setLoggedIn(false))
+
+    handleIncomingRedirect({restorePreviousSession: true})
+      .then((info) => {
+        if(info){
+          let status = info.isLoggedIn || false
+          if(status !== loggedIn){
+            setLoggedIn(status)
+          }
+        }
+      })
+  })
   return (
     <div className="App">
       <h1 className="app-title">{config.title}</h1>
