@@ -28,6 +28,7 @@ The configuration file follows a simple structure.
     "logoLocation": "Image location of the logo shown at the top of the app (relative to public folder.).",
     "mainAppColor": "The main colors used in the app, can be any CSS color.",
     "backgroundColor": "Background color of the app, can be any CSS color.",
+    "footer": "HTML components or text that will function as the footer (will be placed in the footer div.)",
     "queryFolder": "The base location of the queries, all query locations will start from this folder (relative to public folder.)",
     "queries": [
         {
