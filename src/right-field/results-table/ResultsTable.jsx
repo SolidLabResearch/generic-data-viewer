@@ -110,7 +110,7 @@ function configureQueryWorker(adder, variableSetter, setIsQuerying) {
   let variablesMain = []
   queryWorker.onmessage = ({ data }) => {
     switch (data.type) {
-      case 'result':
+      case "result":
         let binding = JSON.parse(data.result)
         let entries = binding.entries
         adder(entries, variablesMain)
