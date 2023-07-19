@@ -11,7 +11,7 @@ function SelectionTable(props){
                 <ul id="query-list">
                     {queries.map((element, index) => (
                         <ExtendableSelector extendContent={element.description} key={index} className="query-entry">
-                            <h3 className="query-selector" onClick={() => onSelected(element)}>{element.name}</h3>
+                            <button className="query-selector" onClick={() => onSelected(element)}>{element.name}</button>
                         </ExtendableSelector>
                     ))}
                 </ul>
