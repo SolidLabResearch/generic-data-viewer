@@ -93,7 +93,7 @@ function configureBindingStream(bindingStream) {
 
 /**
  * Handles the event whenever the creation of a BindingStream fails. 
- * @param {Error} error error object returned by the communica engine whenever the creation of a BindingStream fails.  
+ * @param {Error} error error object returned by the Comunica engine whenever the creation of a BindingStream fails.  
  */
 function handleBindingStreamFail(error) {
   console.error(error)
