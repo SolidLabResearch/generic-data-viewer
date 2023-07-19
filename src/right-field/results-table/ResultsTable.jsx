@@ -4,180 +4,170 @@ import config from "../../config.json"
 import { useEffect, useRef, useState } from "react";
 import { Grid, _ } from 'gridjs-react';
 import "gridjs/dist/theme/mermaid.min.css";
-import {typeRepresentationMapper, typeSortMapper} from '../../typeMapper.js'
+import { typeRepresentationMapper, typeSortMapper } from '../../typeMapper.js'
+import QueryWorker from "worker-loader!../../workers/worker"
 
 config = JSON.parse(JSON.stringify(config))
-
-if(!config.queryFolder){
+if (!config.queryFolder) {
   config.queryFolder = './'
 }
 
-if(config.queryFolder.substring(config.queryFolder.length-1) !== '/'){
+if (config.queryFolder.substring(config.queryFolder.length - 1) !== '/') {
   config.queryFolder = `${config.queryFolder}/`
 }
 
-const QueryEngine = require('@comunica/query-sparql').QueryEngine;
-const myEngine = new QueryEngine()
-
+let queryWorker = undefined
 
 /**
  * 
- * @param {query} props.query The query (as defined in the config file) that should be executed and results displayed in the table. 
+ * @param {query} props.selectedQuery The query (as defined in the config file) that should be executed and results displayed in the table. 
  * @returns {Component} A React component giving a structural representation of the query results.  
  */
-function ResultsTable(props){
-    const selectedquery = props.selectedquery
-    const [results, setResults] = useState([])
-    const [variables, setVariables] = useState([])
-    const containerRef = useRef()
+function ResultsTable(props) {
+  const selectedQuery = props.selectedQuery
+  const [results, setResults] = useState([])
+  const [variables, setVariables] = useState([])
+  const containerRef = useRef()
+  const [isQuerying, setQuerying] = useState(false)
 
-    if(containerRef.current){
-      console.log(containerRef.current.wrapper.current)
-      containerRef.current.wrapper.current.className = "grid-wrapper";
-    }  
+  if (containerRef.current) {
+    containerRef.current.wrapper.current.className = "grid-wrapper";
+  }
 
-    let adder = (item, variables) => setResults((old) => {
-      let newValues = []
-      for(let variable of variables){
-        let value = item.get(variable) ? item.get(variable) : ""
-        let type = variable.split('_')[1]
-        let componentCaller = typeRepresentationMapper[type] 
-        componentCaller = componentCaller ? componentCaller : (text) => text.id
-        newValues.push(componentCaller(value))
+  useEffect(() => { configureQueryWorker(adder, setVariables, setQuerying) }, [])
+
+  let adder = adderFunctionMapper["bindings"](setResults)
+
+  const onQueryChanged = () => {
+    if (selectedQuery) {
+      if (isQuerying) {
+        queryWorker.terminate()
+        configureQueryWorker(adder, setVariables, setQuerying)
       }
-      
-      return [...old, newValues]}
-      
-    )
+      setResults([])
+      setVariables([])
+      setQuerying(true)
+      executeQuery(selectedQuery, queryWorker)
+    }
+  }
 
-    let onqueryChanged = () => {
-      if(selectedquery){
-        setResults([])
-        setVariables([])
-        executequery(selectedquery, adder, setVariables)
+  if (props.refreshButton.current) {
+    props.refreshButton.current.onclick = onQueryChanged
+  }
+
+  useEffect(() => {
+    onQueryChanged()
+  }, [selectedQuery])
+
+  return (
+    <div className="results-table">
+      {!selectedQuery && <label>Please select a query.</label>}
+      {selectedQuery &&
+        <Grid style={{ td: { "text-align": "center" }, th: { "text-align": "center" }, container: { "margin": "0" } }}
+          className={{ tbody: "grid-body" }}
+          data={results}
+          sort={true}
+          autowidth={false}
+          fixedHeader={true}
+          ref={containerRef}
+          columns={variables.map(column => { return generateColumn(column, variables.length) })} />
       }
-    }
-
-    if(props.refreshButton.current){
-      props.refreshButton.current.onclick = onqueryChanged
-    }
-
-    useEffect(() => {
-        onqueryChanged()
-    }, [selectedquery])
-
-    return(
-        <div className="results-table">
-            {!selectedquery && <label>Please select a query.</label>}
-            {selectedquery && 
-            <Grid style={{td: {"text-align": "center"}, th: {"text-align": "center"}, container: {"margin": "0"}}}
-            className={{tbody: "grid-body"}}
-            data={results} 
-            sort={true}
-            autowidth={false}
-            fixedHeader={true}
-            ref={containerRef}
-            columns={variables.map(column => {return generateColumn(column, variables.length)})}/>
-            }
-        </div>
-    )
+    </div>
+  )
 }
 
-function generateColumn(variable, size){
+const adderFunctionMapper = {
+  "bindings": (setter) => { return (item, variable) => bindingStreamAdder(item, variable, setter) }
+}
+
+/**
+ * Processes a result entry as it should look in the result table, and adds it to the table entries
+ * @param {Object} item the entry which should be processed 
+ * @param {Array<String>} variables A list of all the variables in the table 
+ * @param {Function} setter function to set the table entries.
+ */
+function bindingStreamAdder(item, variables, setter) {
+  let newValues = []
+  for (let variable of variables) {
+    let value = item[variable] ? item[variable] : ""
+    let type = variable.split('_')[1]
+    let componentCaller = typeRepresentationMapper[type]
+    componentCaller = componentCaller ? componentCaller : (text) => text.value
+    newValues.push(componentCaller(value))
+  }
+
+  setter(old => { return [...old, newValues] })
+}
+
+/**
+ * Configures how the messages and errors received by the QueryWorker should be handled 
+ * @param {Function} adder function which processes the result, takes the result as argument
+ * @param {Function} variableSetter setter function for the variables, takes a list of variable names
+ * @param {Function} setIsQuerying boolean setter function for whether the worker is still executing a query or not
+ */
+function configureQueryWorker(adder, variableSetter, setIsQuerying) {
+  queryWorker = new QueryWorker()
+  let variablesMain = []
+  queryWorker.onmessage = ({ data }) => {
+    switch (data.type) {
+      case "result":
+        let binding = JSON.parse(data.result)
+        let entries = binding.entries
+        adder(entries, variablesMain)
+
+        break;
+      case "end":
+        setIsQuerying(false)
+        break;
+      case "metadata": {
+        variablesMain = data.metadata.variables.map(val => val.value)
+        variableSetter(variablesMain)
+        break;
+      }
+    }
+  }
+}
+
+/**
+ * Given a variable name and total amount of variables generates a configuration object as defined by GridJS https://gridjs.io/docs/config/columns 
+ * @param {String} variable a variable name 
+ * @param {Integer} size total amount of variables
+ * @returns {Object} a configuration object corresponding to a column, following GridJS config. 
+ */
+function generateColumn(variable, size) {
   let variableSplitted = variable.split('_')
   return {
     name: variableSplitted[0],
     sort: {
       compare: typeSortMapper[variableSplitted[1]]
     },
-    width: `${100/size}%`
+    width: `${100 / size}%`
   }
 }
 
 /**
  * A function that executes a given query and processes every result as a stream based on the functions provided. 
  * @param {query} query the query which gets executed 
- * @param {Function} adder a function which handles what happens with every variable result  
- * @param {Function} variableSetter a function which handles what happens with every variable name 
+ * @param {Worker} queryWorker the worker which will be used to execute the given query
 */
-async function executequery(query, adder, variableSetter){
-  try{
+async function executeQuery(query, queryWorker) {
+  try {
     let result = await fetch(`${config.queryFolder}${query.queryLocation}`)
-    let queryText = await result.text()
-    handlequeryExecution(myEngine.queryBindings(
-      queryText, {sources:query.sources}
-
-    ), adder, variableSetter)
+    query.queryText = await result.text()
+    queryWorker.postMessage({ selectedQuery: query })
   }
-  catch(error){
-    handlequeryFetchFail(error)
+  catch (error) {
+    handleQueryFetchFail(error)
   }
-}
-
-
-/**
- * A function that given a BindingStream processes every result as a stream based on the functions provided. 
- * @param {Promise<BindingStream>} execution   
- * @param {Function} adder a function which handles what happens with every variable result  
- * @param {Function} variableSetter a function which handles what happens with every variable name 
- */
-async function handlequeryExecution(execution, adder, variableSetter){
-  try{
-    let bindingStream = await execution 
-    let variablesMain = []
-    bindingStream.on('data', (binding) => {
-      let variables = []
-      let keys = binding.keys()
-      let key = keys.next()
-      while(!key.done){
-          variables.push(key.value.value)
-          key = keys.next()
-      }   
-      variablesMain = extendList(variablesMain, variables)
-      variableSetter(variablesMain)
-      adder(binding, variablesMain)
-    })
-
-    bindingStream.on('error', handlequeryResultFail)
-  }
-  catch(error){
-    handleBindingStreamFail(error)
-  }
-   
-}
-
-function extendList(list, newList){
-  for(let value of newList){
-    if(!list.includes(value)){
-      list.push(value)
-    }
-  }
-  return list
-}
-
-/**
- * Handles the event whenever an error occurs during query execution. 
- * @param {Error} error object returned by the communica engine whenever a problem occurs during query execution.
- */
-function handlequeryResultFail(error){
-  console.error(error)
-}
-
-/**
- * Handles the event whenever the creation of a BindingStream fails. 
- * @param {Error} error error object returned by the communica engine whenever the creation of a BindingStream fails.  
- */
-function handleBindingStreamFail(error){
-  console.error(error)
 }
 
 /**
  * Handles the event whenever the fetching of a query fails.
  * @param {Error} error the object returned by the fetch API whenever the fetch fails. 
  */
-function handlequeryFetchFail(error){
+function handleQueryFetchFail(error) {
   console.error(error)
 }
 
 
-export default ResultsTable; 
+export default ResultsTable
