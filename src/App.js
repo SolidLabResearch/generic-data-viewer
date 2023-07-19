@@ -15,7 +15,10 @@ function App() {
   const [selectedQuery, setSelectedQuery] = useState(undefined)
   return (
     <div className="App">
-      <h1 className="app-title">{config.title}</h1>
+      <header>
+        <img className="logo" src={config.logoLocation}></img>
+        <h1 className="app-title">{config.title}</h1>
+      </header>
       <div className="app-body">
         <SelectionTable onSelected={(query) => setSelectedQuery(query)} queries={config.queries}/>
         <RightField query={selectedQuery} />
