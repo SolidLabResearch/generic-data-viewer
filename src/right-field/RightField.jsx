@@ -17,7 +17,7 @@ function RightField(props){
                 {query && <label id="query-name-label">{query.name}</label>}
                 <button id="login-button">Login</button>
             </div>
-            <ResultsTable refreshButton={refreshRef}  selectedquery={query}/>
+            <ResultsTable refreshButton={refreshRef}  selectedQuery={query}/>
         </div>
     )
 }
