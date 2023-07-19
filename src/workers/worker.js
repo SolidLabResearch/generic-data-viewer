@@ -1,7 +1,7 @@
 import { QueryEngine } from "@comunica/query-sparql"
 
 
-let myEngine = new QueryEngine()
+const myEngine = new QueryEngine()
 
 onmessage = (selectedQuery) => {
   executeQuery(selectedQuery.data.selectedQuery)
@@ -13,7 +13,7 @@ onmessage = (selectedQuery) => {
 */
 async function executeQuery(query) {
   try {
-    return handleQueryExecution(myEngine.query(
+    return handleQueryExecution(await myEngine.query(
       query.queryText, { sources: query.sources }
 
     ))
@@ -35,7 +35,6 @@ const queryTypeHandlers = {
  */
 async function handleQueryExecution(execution) {
   try {
-    execution = await execution
     let metadata = await execution.metadata()
     postMessage({ type: 'metadata', metadata: { variables: metadata.variables, queryType: execution.resultType } })
 
