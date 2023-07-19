@@ -2,7 +2,7 @@ import "./App.css"
 import SelectionTable from "./selection-table/SelectionTable";
 import RightField from "./right-field/RightField";
 import config from "./config.json" 
-import { useState } from "react";
+import {  useState } from "react";
 
 
 /**
@@ -21,7 +21,7 @@ function App() {
         <SelectionTable onSelected={(query) => setSelectedQuery(query)} queries={config.queries}/>
         <RightField query={selectedQuery} />
       </div>
-      <footer><p><a href="https://idlab.technology/">IDLab</a> - <a href="https://www.imec.be/nl">imec</a> - <a href="https://www.ugent.be/">UGent</a></p></footer>
+      <footer dangerouslySetInnerHTML={{__html: config.footer}}></footer>
 
     </div>
   );
