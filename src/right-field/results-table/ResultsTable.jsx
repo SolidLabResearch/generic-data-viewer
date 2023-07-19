@@ -100,7 +100,7 @@ function bindingStreamAdder(item, variables, setter) {
 }
 
 /**
- * 
+ * Configures how the messages and errors received by the QueryWorker should be handled 
  * @param {Function} adder function which processes the result, takes the result as argument
  * @param {Function} variableSetter setter function for the variables, takes a list of variable names
  * @param {Function} setIsQuerying boolean setter function for whether the worker is still executing a query or not
@@ -129,7 +129,7 @@ function configureQueryWorker(adder, variableSetter, setIsQuerying) {
 }
 
 /**
- * 
+ * Given a variable name and total amount of variables generates a configuration object as defined by GridJS https://gridjs.io/docs/config/columns 
  * @param {String} variable a variable name 
  * @param {Integer} size total amount of variables
  * @returns {Object} a configuration object corresponding to a column, following GridJS config. 
