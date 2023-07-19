@@ -24,7 +24,7 @@ let queryWorker = undefined
  * @returns {Component} A React component giving a structural representation of the query results.  
  */
 function ResultsTable(props) {
-  const selectedquery = props.selectedquery
+  const selectedQuery = props.selectedQuery
   const [results, setResults] = useState([])
   const [variables, setVariables] = useState([])
   const containerRef = useRef()
@@ -38,8 +38,8 @@ function ResultsTable(props) {
 
   let adder = adderFunctionMapper["bindings"](setResults)
 
-  const onqueryChanged = () => {
-    if (selectedquery) {
+  const onQueryChanged = () => {
+    if (selectedQuery) {
       if (isQuerying) {
         queryWorker.terminate()
         configureQueryWorker(adder, setVariables, setQuerying)
@@ -47,22 +47,22 @@ function ResultsTable(props) {
       setResults([])
       setVariables([])
       setQuerying(true)
-      executequery(selectedquery, queryWorker)
+      executeQuery(selectedQuery, queryWorker)
     }
   }
 
   if (props.refreshButton.current) {
-    props.refreshButton.current.onclick = onqueryChanged
+    props.refreshButton.current.onclick = onQueryChanged
   }
 
   useEffect(() => {
-    onqueryChanged()
-  }, [selectedquery])
+    onQueryChanged()
+  }, [selectedQuery])
 
   return (
     <div className="results-table">
-      {!selectedquery && <label>Please select a query.</label>}
-      {selectedquery &&
+      {!selectedQuery && <label>Please select a query.</label>}
+      {selectedQuery &&
         <Grid style={{ td: { "text-align": "center" }, th: { "text-align": "center" }, container: { "margin": "0" } }}
           className={{ tbody: "grid-body" }}
           data={results}
@@ -150,14 +150,14 @@ function generateColumn(variable, size) {
  * @param {query} query the query which gets executed 
  * @param {Worker} queryWorker the worker which will be used to execute the given query
 */
-async function executequery(query, queryWorker) {
+async function executeQuery(query, queryWorker) {
   try {
     let result = await fetch(`${config.queryFolder}${query.queryLocation}`)
     query.queryText = await result.text()
     queryWorker.postMessage({ selectedQuery: query })
   }
   catch (error) {
-    handlequeryFetchFail(error)
+    handleQueryFetchFail(error)
   }
 }
 
@@ -165,7 +165,7 @@ async function executequery(query, queryWorker) {
  * Handles the event whenever the fetching of a query fails.
  * @param {Error} error the object returned by the fetch API whenever the fetch fails. 
  */
-function handlequeryFetchFail(error) {
+function handleQueryFetchFail(error) {
   console.error(error)
 }
 

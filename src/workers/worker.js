@@ -4,22 +4,22 @@ import { QueryEngine } from "@comunica/query-sparql"
 let myEngine = new QueryEngine()
 
 onmessage = (selectedQuery) => {
-  executequery(selectedQuery.data.selectedQuery)
+  executeQuery(selectedQuery.data.selectedQuery)
 }
 
 /**
  * A function that executes a given query and processes every result as a stream based on the functions provided. 
  * @param {query} query the query which gets executed 
 */
-async function executequery(query) {
+async function executeQuery(query) {
   try {
-    return handlequeryExecution(myEngine.query(
+    return handleQueryExecution(myEngine.query(
       query.queryText, { sources: query.sources }
 
     ))
   }
   catch (error) {
-    handlequeryFetchFail(error)
+    handleQueryFetchFail(error)
   }
 }
 
@@ -33,7 +33,7 @@ const queryTypeHandlers = {
  * A function that given a QueryType send every result as a stream to the main thread. 
  * @param {Promise<QueryType>} execution the promise of a query execution 
  */
-async function handlequeryExecution(execution) {
+async function handleQueryExecution(execution) {
   try {
     execution = await execution
     let metadata = await execution.metadata()
@@ -48,7 +48,7 @@ async function handlequeryExecution(execution) {
 }
 
 /**
- * Configures how a boolean query gets processed and sendt to the main thread
+ * Configures how a boolean query gets processed and sent to the main thread
  * @param {Boolean} result the result of a boolean query 
  */
 function configureBool(result) {
@@ -59,7 +59,7 @@ function configureBool(result) {
 /**
  * Configures how a query resulting in a stream of quads or bindings should be processed and sent to the main thread
  * @param {BindingStream || (AsyncIterator<Quad> & ResultStream<Quad>>)} stream 
- * @param {Function} dataParser Parses the values from the stream seperately as they should be sent to main thread  
+ * @param {Function} dataParser Parses the values from the stream separately as they should be sent to main thread  
  */
 function configureStream(stream, dataParser = (data) => { return JSON.stringify(data) }) {
   stream.on('data', (data) => {
@@ -104,6 +104,6 @@ function handleBindingStreamFail(error) {
  * Handles the event whenever the fetching of a query fails.
  * @param {Error} error the object returned by the fetch API whenever the fetch fails. 
  */
-function handlequeryFetchFail(error) {
+function handleQueryFetchFail(error) {
   console.error(error)
 }
