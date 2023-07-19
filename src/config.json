@@ -1,6 +1,8 @@
 {
     "title": "Generic Data Viewer",
     "logoLocation": "images/IDLab-logo.png",
+    "mainAppColor": "#d3d3d3", 
+    "backgroundColor": "#fff",
     "queryFolder": "queries",
     "queries": [
         {

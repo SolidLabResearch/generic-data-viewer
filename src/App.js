@@ -4,8 +4,6 @@ import RightField from "./right-field/RightField";
 import config from "./config.json" 
 import { useState } from "react";
 
-config = JSON.parse(JSON.stringify(config))
-
 
 /**
  * 
@@ -14,7 +12,7 @@ config = JSON.parse(JSON.stringify(config))
 function App() {
   const [selectedQuery, setSelectedQuery] = useState(undefined)
   return (
-    <div className="App">
+    <div className="App" style={{backgroundColor: config.backgroundColor}}>
       <header>
         <img className="logo" src={config.logoLocation}></img>
         <h1 className="app-title">{config.title}</h1>
