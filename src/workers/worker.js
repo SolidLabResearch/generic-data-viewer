@@ -1,7 +1,7 @@
 import { QueryEngine } from "@comunica/query-sparql"
 
 
-let myEngine = new QueryEngine()
+const myEngine = new QueryEngine()
 
 onmessage = (selectedQuery) => {
   executeQuery(selectedQuery.data.selectedQuery)
