@@ -19,6 +19,7 @@ function ExtendableSelector({ extendContent, children }) {
         <div className="extend-container">
           {children}
           <div
+            role="button"
             onClick={(e) => {
               switchExtended();
               e.target.classList.toggle("down");
