@@ -6,11 +6,10 @@ import { useState } from "react"
 
 
 /**
- * @param {EventListener} props.onClick an event listener for when the title in the component is clicked.
  * @param {String} props.extendContent the content shown when the component is extended.  
  * @returns A component with a title, which can be extended by clicking a button. If extended extra content is shown. 
  */
-function ExtendableSelector({onClick, extendContent, children}){
+function ExtendableSelector({extendContent, children}){
     const [extended, setExtended] = useState(false)
     let switchExtended = () => setExtended((old) => {return !old})
     return(
