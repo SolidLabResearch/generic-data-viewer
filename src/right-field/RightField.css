@@ -9,6 +9,9 @@
 
 .control-section{
     height: 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 button{
@@ -21,9 +24,26 @@ button{
 }
 
 #query-name-label{
-    display: inline-block;
+    height: 100%;
+    font-size: calc(0.9vw + 0.9vh);
 }
 
 #login-button{
     float: inline-end;
+}
+
+#query-information{
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin: 0;
+    width: fit-content;
+}
+
+#query-information *{
+    margin-left: 0;
+}
+
+.stopWatch{
+    margin-right: 0;
 }
