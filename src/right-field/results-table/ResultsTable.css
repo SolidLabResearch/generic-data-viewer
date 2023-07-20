@@ -18,7 +18,7 @@
 }
 
 .grid-body{
-    overflow: auto;
+    overflow: scroll;
 }
 
 .gridjs-table{
@@ -33,6 +33,8 @@
 
 .gridjs-wrapper{
     max-height: 100%;
+    margin: 0;
+    padding: 0;
     overflow: hidden;
 }
 
