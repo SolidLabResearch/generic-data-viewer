@@ -3,7 +3,7 @@ import {  getLiteral, getProfileAll, getThing } from "@inrupt/solid-client";
 import { FOAF } from "@inrupt/vocab-common-rdf";
 import { useState } from "react";
 
-function SolidLoginForm() {
+function SolidLoginForm(props) {
   const session = getDefaultSession();
   let webId = session.info.webId
   const [name, setName] = useState(undefined)
@@ -17,7 +17,7 @@ function SolidLoginForm() {
 
   function handleLogin(event) {
     event.preventDefault();
-
+    props.onClick()
     let idp = event.target[0].value;
     session.login({
       oidcIssuer: idp,
@@ -28,6 +28,7 @@ function SolidLoginForm() {
 
   function handleLogout(event) {
     event.preventDefault();
+    props.onClick()
     session.logout();
   }
 

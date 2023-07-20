@@ -44,9 +44,7 @@ function RightField(props) {
   const onQueryChanged = () => {
     setTime(0);
     if (selectedQuery) {
-      if (iterator) {
-        disableIterator()
-      }
+      disableIterator()
       setResults([]);
       setVariables([]);
       iterator = undefined
@@ -86,7 +84,7 @@ function RightField(props) {
             </label>
           )}
         </div>
-        <SolidLoginForm />
+        <SolidLoginForm onClick={disableIterator}/>
       </div>
       <ResultsTable
         results={results}
@@ -125,10 +123,13 @@ function bindingStreamAdder(item, variables, setter) {
 }
 
 function disableIterator(){
-  iterator.removeAllListeners('end')
-  iterator.removeAllListeners('data')
-  iterator.removeAllListeners('error')
-  iterator.destroy()
+  if(iterator){
+    iterator.removeAllListeners('end')
+    iterator.removeAllListeners('data')
+    iterator.removeAllListeners('error')
+    iterator.destroy()
+  }
+
 }
 
 /**
@@ -141,11 +142,10 @@ async function executeQuery(query, variableSetter, resultAdder, setIsQuerying) {
     let result = await fetch(`${config.queryFolder}${query.queryLocation}`);
     query.queryText = await result.text();
     let fetchFunction = getDefaultSession().info.isLoggedIn ? authFetch: fetch
-    console.log(getDefaultSession().info.isLoggedIn)
     return handleQueryExecution(
       await myEngine.query(query.queryText, {
         sources: query.sources,
-        fetch: fetchFunction,
+        "fetch": fetchFunction,
       }),
       variableSetter, resultAdder, setIsQuerying
     );
