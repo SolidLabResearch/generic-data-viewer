@@ -1,6 +1,10 @@
 {
     "title": "Generic Data Viewer",
+    "logoLocation": "images/IDLab-logo.jpg",
+    "mainAppColor": "lightgray", 
+    "backgroundColor": "#fff",
     "queryFolder": "queries",
+    "footer": "<p><a href='https://idlab.technology/'>IDLab</a> - <a href='https://www.imec.be/nl'>imec</a> - <a href='https://www.ugent.be/'>UGent</a></p>",
     "queries": [
         {
             "queryLocation": "test.ttl",

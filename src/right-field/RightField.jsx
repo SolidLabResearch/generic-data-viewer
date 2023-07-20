@@ -18,6 +18,7 @@ if (config.queryFolder.substring(config.queryFolder.length - 1) !== '/') {
 let queryWorker = undefined
 
 
+
 /**
  *
  * @param {query} props.query The query (as defined in the config file) that should be executed and results displayed in the table.
@@ -73,6 +74,7 @@ function RightField(props) {
           {selectedQuery && <label><strong>Result Count:</strong>{results.length}</label>}
           {selectedQuery && <strong id="query-name-label">{selectedQuery.name}</strong>}
           {selectedQuery && <label className="stopWatch"><strong >Runtime:</strong><Time time={time}/></label>}
+
         </div>
         <button id="login-button">Login</button>
       </div>
