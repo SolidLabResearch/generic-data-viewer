@@ -1,6 +1,7 @@
 import { useRef } from "react"
 import ResultsTable from "./results-table/ResultsTable"
 import "./RightField.css"
+import config from "../config.json"
 
 /**
  * 
@@ -11,7 +12,7 @@ function RightField(props){
     let query = props.query
     let refreshRef = useRef(undefined) 
     return(
-        <div className="right-field">
+        <div className="right-field" style={{backgroundColor: config.mainAppColor}}>
             <div className="control-section">
                 <button ref={refreshRef}  disabled={query===undefined} id="refresh-button">Refresh</button>
                 {query && <label id="query-name-label">{query.name}</label>}
