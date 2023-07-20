@@ -34,10 +34,13 @@ function SolidLoginForm(props) {
 
   if (!session.info.isLoggedIn) {
     return (
-      <form onSubmit={handleLogin} className="loginForm">
+      <div className="login-form">
+        <form onSubmit={handleLogin} >
         <input type="text" placeholder="Identity Provider..." defaultValue="https://inrupt.net" />
         <input type="submit" value="Login" className="form-button"/>
       </form>
+      </div>
+      
     );
   } else {
     return (
