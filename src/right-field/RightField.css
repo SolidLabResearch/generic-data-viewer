@@ -20,7 +20,7 @@ button{
 }
 
 #refresh-button{
-    float: inline-start;
+    width: fit-content;
 }
 
 #query-name-label{
@@ -28,17 +28,27 @@ button{
     font-size: calc(0.9vw + 0.9vh);
 }
 
-#login-button{
-    float: inline-end;
+.form-button{
+    width: fit-content;
+}
+
+.refresh-button-container{
+    flex: 1;
+    margin: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
 }
 
 #query-information{
+    text-align: center;
     display: flex;
+    justify-content: center;
     align-items: center;
     height: 100%;
-    margin: 0;
     width: fit-content;
 }
+
 
 #query-information *{
     margin-left: 0;
@@ -47,3 +57,27 @@ button{
 .stopWatch{
     margin-right: 0;
 }
+
+.login-form{
+    flex: 1;
+    display: flex;
+    margin: 0;
+    margin-left: auto;
+    height: 100%;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+#logged-in-label{
+    display: flex;
+    margin: 0;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+#logged-in-label strong{
+    margin: 0;
+    margin-right: 5px;
+}
+

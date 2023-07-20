@@ -5,7 +5,10 @@ import { typeRepresentationMapper } from "../typeMapper.js";
 import config from "../config.json";
 import Time from "../components/Time";
 import SolidLoginForm from "../components/SolidLoginForm";
-import { fetch as authFetch, getDefaultSession } from "@inrupt/solid-client-authn-browser";
+import {
+  fetch as authFetch,
+  getDefaultSession,
+} from "@inrupt/solid-client-authn-browser";
 import { QueryEngine } from "@comunica/query-sparql";
 
 if (!config.queryFolder) {
@@ -44,10 +47,10 @@ function RightField(props) {
   const onQueryChanged = () => {
     setTime(0);
     if (selectedQuery) {
-      disableIterator()
+      disableIterator();
       setResults([]);
       setVariables([]);
-      iterator = undefined
+      iterator = undefined;
       setQuerying(true);
       executeQuery(selectedQuery, setVariables, adder, setQuerying);
     }
@@ -60,13 +63,16 @@ function RightField(props) {
   return (
     <div className="right-field">
       <div className="control-section">
-        <button
-          disabled={!selectedQuery}
-          id="refresh-button"
-          onClick={onQueryChanged}
-        >
-          Refresh
+        <div className="refresh-button-container">
+          <button
+            disabled={!selectedQuery}
+            id="refresh-button"
+            onClick={onQueryChanged}
+          >
+            Refresh
         </button>
+        </div>
+        
         <div id="query-information">
           {selectedQuery && (
             <label>
@@ -84,7 +90,7 @@ function RightField(props) {
             </label>
           )}
         </div>
-        <SolidLoginForm onClick={disableIterator}/>
+        <SolidLoginForm onClick={disableIterator} />
       </div>
       <ResultsTable
         results={results}
@@ -122,14 +128,13 @@ function bindingStreamAdder(item, variables, setter) {
   });
 }
 
-function disableIterator(){
-  if(iterator){
-    iterator.removeAllListeners('end')
-    iterator.removeAllListeners('data')
-    iterator.removeAllListeners('error')
-    iterator.destroy()
+function disableIterator() {
+  if (iterator) {
+    iterator.removeAllListeners("end");
+    iterator.removeAllListeners("data");
+    iterator.removeAllListeners("error");
+    iterator.destroy();
   }
-
 }
 
 /**
@@ -141,16 +146,18 @@ async function executeQuery(query, variableSetter, resultAdder, setIsQuerying) {
   try {
     let result = await fetch(`${config.queryFolder}${query.queryLocation}`);
     query.queryText = await result.text();
-    let fetchFunction = getDefaultSession().info.isLoggedIn ? authFetch: fetch
+    let fetchFunction = getDefaultSession().info.isLoggedIn ? authFetch : fetch;
     return handleQueryExecution(
       await myEngine.query(query.queryText, {
         sources: query.sources,
-        "fetch": fetchFunction,
+        fetch: fetchFunction,
       }),
-      variableSetter, resultAdder, setIsQuerying
+      variableSetter,
+      resultAdder,
+      setIsQuerying
     );
   } catch (error) {
-    setIsQuerying(false)
+    setIsQuerying(false);
     handleQueryFetchFail(error);
   }
 }
@@ -167,7 +174,9 @@ async function handleQueryExecution(
 ) {
   try {
     let metadata = await execution.metadata();
-    let variables = metadata.variables.map(val => {return val.value})
+    let variables = metadata.variables.map((val) => {
+      return val.value;
+    });
     variableSetter(variables);
 
     queryTypeHandlers[execution.resultType](
@@ -177,7 +186,7 @@ async function handleQueryExecution(
       setIsQuerying
     );
   } catch (error) {
-    console.error(error.message) //TODO
+    console.error(error.message); //TODO
   }
 }
 
@@ -216,7 +225,12 @@ function configureIterator(variables, resultAdder, setIsQuerying) {
  * Configures how a query resulting in a stream of quads should be processed and sent to the main thread
  * @param {AsyncIterator<Quad> & ResultStream<Quad>>} quadStream a stream of Quads
  */
-function configureQuadStream(quadStream, variables, resultAdder, setIsQuerying) {
+function configureQuadStream(
+  quadStream,
+  variables,
+  resultAdder,
+  setIsQuerying
+) {
   iterator = quadStream;
   configureIterator(variables, resultAdder, setIsQuerying);
 }
@@ -225,7 +239,12 @@ function configureQuadStream(quadStream, variables, resultAdder, setIsQuerying) 
  * Configures how a query resulting in a stream of bindings should be processed and sent to the main thread
  * @param {BindingStream} bindingStream a stream of  Bindings
  */
-function configureBindingStream(bindingStream, variables, resultAdder, setIsQuerying) {
+function configureBindingStream(
+  bindingStream,
+  variables,
+  resultAdder,
+  setIsQuerying
+) {
   iterator = bindingStream;
   configureIterator(variables, resultAdder, setIsQuerying);
 }
