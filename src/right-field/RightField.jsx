@@ -65,7 +65,7 @@ function RightField(props) {
   }, [selectedQuery]);
 
   return (
-    <div className="right-field">
+    <div className="right-field" style={{backgroundColor: config.mainAppColor}}>
       <div className="control-section">
         <button disabled={!selectedQuery} id="refresh-button" onClick={onQueryChanged}>
           Refresh
