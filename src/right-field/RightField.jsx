@@ -95,6 +95,7 @@ function RightField(props) {
       <ResultsTable
         results={results}
         variables={variables}
+        isQuerying={isQuerying}
         selectedQuery={selectedQuery}
       />
     </div>
