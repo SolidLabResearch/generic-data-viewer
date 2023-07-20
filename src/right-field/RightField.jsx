@@ -1,10 +1,11 @@
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ResultsTable from "./results-table/ResultsTable";
 import "./RightField.css";
 import QueryWorker from "worker-loader!../workers/worker"
 import { typeRepresentationMapper } from '../typeMapper.js'
 import config from "../config.json"
 import Time from "../components/Time";
+import SolidLoginForm from "../components/SolidLoginForm"
 
 
 if (!config.queryFolder) {
@@ -74,7 +75,7 @@ function RightField(props) {
           {selectedQuery && <strong id="query-name-label">{selectedQuery.name}</strong>}
           {selectedQuery && <label className="stopWatch"><strong >Runtime:</strong><Time time={time}/></label>}
         </div>
-        <button id="login-button">Login</button>
+        <SolidLoginForm/>
       </div>
       <ResultsTable results={results} variables={variables} selectedQuery={selectedQuery} />
     </div>
