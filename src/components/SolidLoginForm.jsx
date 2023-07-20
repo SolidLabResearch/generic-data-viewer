@@ -1,14 +1,17 @@
 import { getDefaultSession, fetch } from "@inrupt/solid-client-authn-browser";
-import { getPodUrlAll } from "@inrupt/solid-client";
+import {  getLiteral, getProfileAll, getThing } from "@inrupt/solid-client";
+import { FOAF } from "@inrupt/vocab-common-rdf";
 import { useState } from "react";
 
 function SolidLoginForm() {
   const session = getDefaultSession();
-  const webId = useState(session.info.webId);
-
+  let webId = session.info.webId
+  const [name, setName] = useState(undefined)
   if (webId) {
-    getPodUrlAll(webId, { fetch: fetch }).then((dataSet) => {
-      console.log(dataSet);
+    getProfileAll(webId, { fetch: fetch }).then((dataSet) => {
+      let profile = dataSet.webIdProfile
+      const webIdThing = getThing(profile, webId)
+      setName(getLiteral(webIdThing, FOAF.name).value) 
     });
   }
 
@@ -31,7 +34,7 @@ function SolidLoginForm() {
   if (!session.info.isLoggedIn) {
     return (
       <form onSubmit={handleLogin}>
-        <input type="text" placeholder="Identity Provider..." />
+        <input type="text" placeholder="Identity Provider..." defaultValue="https://inrupt.net" />
         <input type="submit" value="Login" />
       </form>
     );
@@ -40,7 +43,7 @@ function SolidLoginForm() {
       <>
         <label>
           <strong>Logged in as: </strong>
-          {webId}
+          {name }
         </label>
         <button onClick={handleLogout}>Logout</button>
       </>
