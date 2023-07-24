@@ -1,23 +1,20 @@
 import { useRef, useState, useEffect } from "react";
 import ResultsTable from "./results-table/ResultsTable";
 import "./RightField.css";
-import QueryWorker from "worker-loader!../workers/worker"
-import { typeRepresentationMapper } from '../typeMapper.js'
-import config from "../config.json"
+import QueryWorker from "worker-loader!../workers/worker";
+import { typeRepresentationMapper } from "../typeMapper.js";
+import config from "../config.json";
 import Time from "../components/Time";
 
-
 if (!config.queryFolder) {
-  config.queryFolder = './'
+  config.queryFolder = "./";
 }
 
-if (config.queryFolder.substring(config.queryFolder.length - 1) !== '/') {
-  config.queryFolder = `${config.queryFolder}/`
+if (config.queryFolder.substring(config.queryFolder.length - 1) !== "/") {
+  config.queryFolder = `${config.queryFolder}/`;
 }
 
-let queryWorker = undefined
-
-
+let queryWorker = undefined;
 
 /**
  *
@@ -26,18 +23,18 @@ let queryWorker = undefined
  */
 function RightField(props) {
   let selectedQuery = props.query;
-  const [results, setResults] = useState([])
-  const [variables, setVariables] = useState([])
-  const [isQuerying, setQuerying] = useState(false)
-  const [time, setTime] = useState(0)
+  const [results, setResults] = useState([]);
+  const [variables, setVariables] = useState([]);
+  const [isQuerying, setQuerying] = useState(false);
+  const [time, setTime] = useState(0);
 
   useEffect(() => {
-    let intervalId
-    if(isQuerying){
-      intervalId = setInterval(() => setTime(time + 1), 10)
+    let intervalId;
+    if (isQuerying) {
+      intervalId = setInterval(() => setTime(time + 1), 10);
     }
-    return () => clearInterval(intervalId)
-  }, [time, isQuerying])
+    return () => clearInterval(intervalId);
+  }, [time, isQuerying]);
 
   useEffect(() => {
     configureQueryWorker(adder, setVariables, setQuerying);
@@ -46,7 +43,7 @@ function RightField(props) {
   let adder = adderFunctionMapper["bindings"](setResults);
 
   const onQueryChanged = () => {
-    setTime(0)
+    setTime(0);
     if (selectedQuery) {
       if (isQuerying) {
         queryWorker.terminate();
@@ -59,26 +56,47 @@ function RightField(props) {
     }
   };
 
-
   useEffect(() => {
     onQueryChanged();
   }, [selectedQuery]);
 
   return (
-    <div className="right-field" style={{backgroundColor: config.mainAppColor}}>
+    <div
+      className="right-field"
+      style={{ backgroundColor: config.mainAppColor }}
+    >
       <div className="control-section">
-        <button disabled={!selectedQuery} id="refresh-button" onClick={onQueryChanged}>
+        <button
+          disabled={!selectedQuery}
+          id="refresh-button"
+          onClick={onQueryChanged}
+        >
           Refresh
         </button>
         <div id="query-information">
-          {selectedQuery && <label><strong>Result Count:</strong>{results.length}</label>}
-          {selectedQuery && <strong id="query-name-label">{selectedQuery.name}</strong>}
-          {selectedQuery && <label className="stopWatch"><strong >Runtime:</strong><Time time={time}/></label>}
-
+          {selectedQuery && (
+            <label>
+              <strong>Result Count:</strong>
+              {results.length}
+            </label>
+          )}
+          {selectedQuery && (
+            <strong id="query-name-label">{selectedQuery.name}</strong>
+          )}
+          {selectedQuery && (
+            <label className="stopWatch">
+              <strong>Runtime:</strong>
+              <Time time={time} showMilliseconds={config.showMilliseconds} />
+            </label>
+          )}
         </div>
         <button id="login-button">Login</button>
       </div>
-      <ResultsTable results={results} variables={variables} selectedQuery={selectedQuery} />
+      <ResultsTable
+        results={results}
+        variables={variables}
+        selectedQuery={selectedQuery}
+      />
     </div>
   );
 }
