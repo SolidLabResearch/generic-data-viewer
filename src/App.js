@@ -31,13 +31,16 @@ function App() {
       })
   })
   return (
-    <div className="App">
-      <h1 className="app-title">{config.title}</h1>
+    <div className="App" style={{backgroundColor: config.backgroundColor}}>
+      <header>
+        <img className="logo" src={config.logoLocation}></img>
+        <h1 className="app-title">{config.title}</h1>
+      </header>
       <div className="app-body">
         <SelectionTable onSelected={(query) => setSelectedQuery(query)} queries={config.queries}/>
         <RightField query={selectedQuery} />
       </div>
-      <footer><p><a href="https://idlab.technology/">IDLab</a> - <a href="https://www.imec.be/nl">imec</a> - <a href="https://www.ugent.be/">UGent</a></p></footer>
+      <footer dangerouslySetInnerHTML={{__html: config.footer}}></footer>
 
     </div>
   );

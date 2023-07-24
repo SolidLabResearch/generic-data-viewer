@@ -66,7 +66,7 @@ function RightField(props) {
   }, [selectedQuery]);
 
   return (
-    <div className="right-field">
+    <div className="right-field" style={{backgroundColor: config.mainAppColor}}>
       <div className="control-section">
         <div className="refresh-button-container">
           <button
