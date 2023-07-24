@@ -107,16 +107,27 @@ function RightField(props) {
   );
 }
 
+/**
+ * Creates an EventEmitter that handles how the UI states should change on certain events. 
+ * @param {Function} setVariables sets the variables of the query. 
+ * @param {Function} resultAdder a function that processes the results.
+ * @param {Function} setIsQuerying a function that sets whether the query is finished or not.
+ * @returns 
+ */
 function makeUIEventEmitter(setVariables, resultAdder, setQuerying){
   let eventEmitter = new EventEmitter()
+  
+  // The variables of the query
   eventEmitter.on('variables', (variables) => {
     setVariables(variables)
   })
 
+  // A new result 
   eventEmitter.on('result', (result) => {
     resultAdder(result)
   })
 
+  // Whether there is currently being queried or not 
   eventEmitter.on('queryingStatus', (isQuerying) => {
     setQuerying(isQuerying)
   })
@@ -151,6 +162,9 @@ function bindingStreamAdder(item, variables, setter) {
   });
 }
 
+/**
+ * If there is currently an iterator active iterator, either a BindingStream or QuadStream, it removes all event listeners and stops the execution. 
+ */
 function disableIterator() {
   if (iterator) {
     iterator.removeAllListeners("end");
@@ -161,9 +175,9 @@ function disableIterator() {
 }
 
 /**
- * A function that executes a given query and processes every result as a stream based on the functions provided.
- * @param {query} query the query which gets executed
- * @param {Worker} queryWorker the worker which will be used to execute the given query
+ * A function that executes a given query and processes every result as a stream based on the EventEmitter.
+ * @param {query} query the query which is to be executed
+ * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes. 
  */
 async function executeQuery(query, eventEmitter) {
   try {
@@ -184,9 +198,10 @@ async function executeQuery(query, eventEmitter) {
 }
 
 /**
- * A function that given a QueryType send every result as a stream to the main thread.
+ * A function that given a QueryType processes every result as a stream.
  * 
- * @param {Promise<QueryType>} execution the promise of a query execution
+ * @param {QueryType} execution a query execution 
+ * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes. 
  */
 async function handleQueryExecution(
   execution,
@@ -228,8 +243,7 @@ function configureBool(result) {
 /**
  *
  * @param {List<String>} variables all the variables of the query behind the binding stream.
- * @param {Function} resultAdder a function that processes the results.
- * @param {Function} setIsQuerying a function that sets whether the query is finished or not.
+ * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes. 
  */
 function configureIterator(variables, eventEmitter) {
   iterator.on('data', (data) => {
@@ -246,8 +260,7 @@ function configureIterator(variables, eventEmitter) {
  * @param {AsyncIterator<Quad> & ResultStream<Quad>>} quadStream a stream of Quads
  * @param {BindingStream} bindingStream a stream of Bindings
  * @param {List<String>} variables all the variables of the query behind the binding stream.
- * @param {Function} resultAdder a function that processes the results.
- * @param {Function} setIsQuerying a function that sets whether the query is finished or not.
+ * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes. 
  */
 function configureQuadStream(
   quadStream,
@@ -262,8 +275,7 @@ function configureQuadStream(
  * Configures how a query resulting in a stream of bindings should be processed.
  * @param {BindingStream} bindingStream a stream of Bindings
  * @param {List<String>} variables all the variables of the query behind the binding stream.
- * @param {Function} resultAdder a function that processes the results.
- * @param {Function} setIsQuerying a function that sets whether the query is finished or not.
+ * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes. 
  */
 function configureBindingStream(
   bindingStream,
