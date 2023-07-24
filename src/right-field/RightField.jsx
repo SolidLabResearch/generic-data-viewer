@@ -11,6 +11,8 @@ import {
 } from "@inrupt/solid-client-authn-browser";
 import { QueryEngine } from "@comunica/query-sparql";
 
+const EventEmitter = require('events')
+
 if (!config.queryFolder) {
   config.queryFolder = "./";
 }
@@ -44,6 +46,9 @@ function RightField(props) {
 
   let adder = adderFunctionMapper["bindings"](setResults);
 
+  const eventEmitter = makeUIEventEmitter(setVariables, adder, setQuerying)
+  
+
   const onQueryChanged = () => {
     setTime(0);
     if (selectedQuery) {
@@ -52,7 +57,7 @@ function RightField(props) {
       setVariables([]);
       iterator = undefined;
       setQuerying(true);
-      executeQuery(selectedQuery, setVariables, adder, setQuerying);
+      executeQuery(selectedQuery, eventEmitter);
     }
   };
 
@@ -70,9 +75,9 @@ function RightField(props) {
             onClick={onQueryChanged}
           >
             Refresh
-        </button>
+          </button>
         </div>
-        
+
         <div id="query-information">
           {selectedQuery && (
             <label>
@@ -102,9 +107,26 @@ function RightField(props) {
   );
 }
 
+function makeUIEventEmitter(setVariables, resultAdder, setQuerying){
+  let eventEmitter = new EventEmitter()
+  eventEmitter.on('variables', (variables) => {
+    setVariables(variables)
+  })
+
+  eventEmitter.on('result', (result) => {
+    resultAdder(result)
+  })
+
+  eventEmitter.on('queryingStatus', (isQuerying) => {
+    setQuerying(isQuerying)
+  })
+
+  return eventEmitter
+}
+
 const adderFunctionMapper = {
   bindings: (setter) => {
-    return (item, variables) => bindingStreamAdder(item, variables, setter);
+    return ({item, variables}) => bindingStreamAdder(item, variables, setter);
   },
 };
 
@@ -143,7 +165,7 @@ function disableIterator() {
  * @param {query} query the query which gets executed
  * @param {Worker} queryWorker the worker which will be used to execute the given query
  */
-async function executeQuery(query, variableSetter, resultAdder, setIsQuerying) {
+async function executeQuery(query, eventEmitter) {
   try {
     let result = await fetch(`${config.queryFolder}${query.queryLocation}`);
     query.queryText = await result.text();
@@ -153,38 +175,35 @@ async function executeQuery(query, variableSetter, resultAdder, setIsQuerying) {
         sources: query.sources,
         fetch: fetchFunction,
       }),
-      variableSetter,
-      resultAdder,
-      setIsQuerying
+      eventEmitter
     );
   } catch (error) {
-    setIsQuerying(false);
+    eventEmitter.emit('queryingStatus', false)
     handleQueryFetchFail(error);
   }
 }
 
 /**
  * A function that given a QueryType send every result as a stream to the main thread.
+ * 
  * @param {Promise<QueryType>} execution the promise of a query execution
  */
 async function handleQueryExecution(
   execution,
-  variableSetter,
-  resultAdder,
-  setIsQuerying
+  eventEmitter
 ) {
   try {
     let metadata = await execution.metadata();
     let variables = metadata.variables.map((val) => {
       return val.value;
     });
-    variableSetter(variables);
+
+    eventEmitter.emit('variables', variables)
 
     queryTypeHandlers[execution.resultType](
       await execution.execute(),
       variables,
-      resultAdder,
-      setIsQuerying
+      eventEmitter
     );
   } catch (error) {
     console.error(error.message); //TODO
@@ -198,7 +217,7 @@ const queryTypeHandlers = {
 };
 
 /**
- * Configures how a boolean query gets processed and sent to the main thread
+ * Configures how a boolean query gets processed.
  * @param {Boolean} result the result of a boolean query
  */
 function configureBool(result) {
@@ -208,46 +227,51 @@ function configureBool(result) {
 
 /**
  *
- * @param {Function} adder function which processes the result, takes the result as argument
- * @param {Function} variableSetter setter function for the variables, takes a list of variable names
- * @param {Function} setIsQuerying boolean setter function for whether the worker is still executing a query or not
+ * @param {List<String>} variables all the variables of the query behind the binding stream.
+ * @param {Function} resultAdder a function that processes the results.
+ * @param {Function} setIsQuerying a function that sets whether the query is finished or not.
  */
-function configureIterator(variables, resultAdder, setIsQuerying) {
-  iterator.on("data", (data) => {
-    resultAdder(data, variables);
+function configureIterator(variables, eventEmitter) {
+  iterator.on('data', (data) => {
+    eventEmitter.emit('result', {variables: variables, item: data})
   });
 
-  iterator.on("end", () => {
-    setIsQuerying(false);
+  iterator.on('end', () => {
+    eventEmitter.emit('queryingStatus', false);
   });
 }
 
 /**
- * Configures how a query resulting in a stream of quads should be processed and sent to the main thread
+ * Configures how a query resulting in a stream of quads should be processed.
  * @param {AsyncIterator<Quad> & ResultStream<Quad>>} quadStream a stream of Quads
+ * @param {BindingStream} bindingStream a stream of Bindings
+ * @param {List<String>} variables all the variables of the query behind the binding stream.
+ * @param {Function} resultAdder a function that processes the results.
+ * @param {Function} setIsQuerying a function that sets whether the query is finished or not.
  */
 function configureQuadStream(
   quadStream,
   variables,
-  resultAdder,
-  setIsQuerying
+  eventEmitter
 ) {
   iterator = quadStream;
-  configureIterator(variables, resultAdder, setIsQuerying);
+  configureIterator(variables, eventEmitter);
 }
 
 /**
- * Configures how a query resulting in a stream of bindings should be processed and sent to the main thread
- * @param {BindingStream} bindingStream a stream of  Bindings
+ * Configures how a query resulting in a stream of bindings should be processed.
+ * @param {BindingStream} bindingStream a stream of Bindings
+ * @param {List<String>} variables all the variables of the query behind the binding stream.
+ * @param {Function} resultAdder a function that processes the results.
+ * @param {Function} setIsQuerying a function that sets whether the query is finished or not.
  */
 function configureBindingStream(
   bindingStream,
   variables,
-  resultAdder,
-  setIsQuerying
+  eventEmitter
 ) {
   iterator = bindingStream;
-  configureIterator(variables, resultAdder, setIsQuerying);
+  configureIterator(variables, eventEmitter);
 }
 
 /**
