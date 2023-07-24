@@ -23,6 +23,7 @@ button{
 }
 
 #query-name-label{
+    margin-right: 0;
     height: 100%;
     font-size: calc(0.9vw + 0.9vh);
 }
@@ -50,9 +51,18 @@ button{
 }
 
 
-#query-information *{
-    margin-left: 0;
+.information-box{
+    overflow: hidden;
 }
+
+.information-box label{
+    display: flex;
+    min-width: 150px;
+    justify-content: flex-start;
+    white-space: nowrap;
+    align-items: center;
+}
+
 
 .stopWatch{
     margin-right: 0;
