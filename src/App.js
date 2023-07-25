@@ -23,7 +23,7 @@ function App() {
     handleIncomingRedirect({restorePreviousSession: true})
       .then((info) => {
         if(info){
-          let status = info.isLoggedIn || false
+          let status = info.isLoggedIn
           if(status !== loggedIn){
             setLoggedIn(status)
           }
