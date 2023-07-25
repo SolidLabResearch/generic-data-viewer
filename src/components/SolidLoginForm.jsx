@@ -11,7 +11,13 @@ function SolidLoginForm(props) {
     getProfileAll(webId, { fetch: fetch }).then((dataSet) => {
       let profile = dataSet.webIdProfile
       const webIdThing = getThing(profile, webId)
-      setName(getLiteral(webIdThing, FOAF.name).value) 
+      let literalName = getLiteral(webIdThing, FOAF.name)
+      if(literalName){
+        setName(literalName.value)
+      }
+      else{
+        setName(webId)
+      } 
     });
   }
 
