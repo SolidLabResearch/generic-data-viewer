@@ -85,7 +85,8 @@ function RightField(props) {
           )}
           {selectedQuery && (
             <label className="stopWatch">
-              <strong>Runtime:</strong>
+              {isQuerying && <strong>Runtime:</strong>}
+              {!isQuerying && <strong>Finished in:</strong>}
               <Time time={time} showMilliseconds={config.showMilliseconds} />
             </label>
           )}
