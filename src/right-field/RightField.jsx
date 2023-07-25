@@ -48,7 +48,10 @@ function RightField(props) {
 
   const eventEmitter = makeUIEventEmitter(setVariables, adder, setQuerying);
 
-  const onQueryChanged = () => {
+  /**
+   * starts the execution of a query and adjusts the UI respectively. 
+   */
+  const startQueryExecution = () => {
     setTime(0);
     if (selectedQuery) {
       disableIterator();
@@ -61,7 +64,7 @@ function RightField(props) {
   };
 
   useEffect(() => {
-    onQueryChanged();
+    startQueryExecution();
   }, [selectedQuery]);
 
   return (
@@ -74,7 +77,7 @@ function RightField(props) {
           <button
             disabled={!selectedQuery}
             id="refresh-button"
-            onClick={onQueryChanged}
+            onClick={startQueryExecution}
           >
             Refresh
           </button>
