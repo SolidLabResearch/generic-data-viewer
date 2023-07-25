@@ -13,7 +13,7 @@ function Time(props){
 
     return(
         <>
-        {`${seconds}.${milliseconds}s`}
+        {display}
         </>
     )
 }
