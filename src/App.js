@@ -33,7 +33,7 @@ function App() {
   return (
     <div className="App" style={{backgroundColor: config.backgroundColor}}>
       <header>
-        <img className="logo" src={config.logoLocation}></img>
+        <img alt="Logo of the Web app" className="logo" src={config.logoLocation}></img>
         <h1 className="app-title">{config.title}</h1>
       </header>
       <div className="app-body">

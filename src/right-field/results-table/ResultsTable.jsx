@@ -1,7 +1,7 @@
 import "./ResultsTable.css"
 
 import { useRef } from "react";
-import { Grid, _ } from 'gridjs-react';
+import { Grid } from 'gridjs-react';
 import "gridjs/dist/theme/mermaid.min.css";
 import { typeSortMapper } from '../../typeMapper.js'
 
