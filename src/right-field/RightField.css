@@ -104,3 +104,12 @@ button{
     margin: 0;
     margin-right: 5px;
 }
+
+.error-label{
+    color: red;
+    justify-self: center;
+    align-self: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}

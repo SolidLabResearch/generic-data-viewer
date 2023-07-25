@@ -34,6 +34,7 @@ function RightField(props) {
   const [results, setResults] = useState([]);
   const [variables, setVariables] = useState([]);
   const [isQuerying, setQuerying] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(undefined);
   const [time, setTime] = useState(0);
 
   useEffect(() => {
@@ -46,11 +47,17 @@ function RightField(props) {
 
   let adder = adderFunctionMapper["bindings"](setResults);
 
-  const eventEmitter = makeUIEventEmitter(setVariables, adder, setQuerying);
+  const eventEmitter = makeUIEventEmitter(
+    setVariables,
+    adder,
+    setQuerying,
+    setErrorMessage
+  );
 
   const onQueryChanged = () => {
     setTime(0);
     if (selectedQuery) {
+      setErrorMessage(undefined);
       disableIterator();
       setResults([]);
       setVariables([]);
@@ -94,7 +101,7 @@ function RightField(props) {
           )}
           {selectedQuery && (
             <div className="information-box stopWatch">
-              <label >
+              <label>
                 <strong>Runtime:</strong>
                 <Time time={time} />
               </label>
@@ -103,12 +110,15 @@ function RightField(props) {
         </div>
         <SolidLoginForm onClick={disableIterator} />
       </div>
-      <ResultsTable
-        results={results}
-        variables={variables}
-        isQuerying={isQuerying}
-        selectedQuery={selectedQuery}
-      />
+      {errorMessage && <label className="error-label">{errorMessage}</label>}
+      {!errorMessage && (
+        <ResultsTable
+          results={results}
+          variables={variables}
+          isQuerying={isQuerying}
+          selectedQuery={selectedQuery}
+        />
+      )}
     </div>
   );
 }
@@ -120,8 +130,18 @@ function RightField(props) {
  * @param {Function} setIsQuerying a function that sets whether the query is finished or not.
  * @returns
  */
-function makeUIEventEmitter(setVariables, resultAdder, setQuerying) {
+function makeUIEventEmitter(
+  setVariables,
+  resultAdder,
+  setQuerying,
+  setErrorMessage
+) {
   let eventEmitter = new EventEmitter();
+
+  // An error message
+  eventEmitter.on("error", (error) => {
+    setErrorMessage(error);
+  });
 
   // The variables of the query
   eventEmitter.on("variables", (variables) => {
@@ -180,6 +200,15 @@ function disableIterator() {
   }
 }
 
+async function fetchQuery(query, eventEmitter) {
+  try {
+    let result = await fetch(`${config.queryFolder}${query.queryLocation}`);
+    return await result.text();
+  } catch (error) {
+    handleQueryFetchFail(error, eventEmitter);
+  }
+}
+
 /**
  * A function that executes a given query and processes every result as a stream based on the EventEmitter.
  * @param {query} query the query which is to be executed
@@ -187,8 +216,7 @@ function disableIterator() {
  */
 async function executeQuery(query, eventEmitter) {
   try {
-    let result = await fetch(`${config.queryFolder}${query.queryLocation}`);
-    query.queryText = await result.text();
+    query.queryText = await fetchQuery(query, eventEmitter);
     let fetchFunction = getDefaultSession().info.isLoggedIn ? authFetch : fetch;
     return handleQueryExecution(
       await myEngine.query(query.queryText, {
@@ -198,8 +226,7 @@ async function executeQuery(query, eventEmitter) {
       eventEmitter
     );
   } catch (error) {
-    eventEmitter.emit("queryingStatus", false);
-    handleQueryFetchFail(error);
+    handleQueryFail(error, eventEmitter);
   }
 }
 
@@ -224,7 +251,7 @@ async function handleQueryExecution(execution, eventEmitter) {
       eventEmitter
     );
   } catch (error) {
-    console.error(error.message); //TODO
+    handleQueryExecutionFail(error, eventEmitter)
   }
 }
 
@@ -283,10 +310,32 @@ function configureBindingStream(bindingStream, variables, eventEmitter) {
 
 /**
  * Handles the event whenever the fetching of a query fails.
- * @param {Error} error the object returned by the fetch API whenever the fetch fails.
+ * @param {Error} error the object returned by the fetch API whenever the fetch for the query fails.
+ * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
  */
-function handleQueryFetchFail(error) {
-  console.error(error);
+function handleQueryFetchFail(error, eventEmitter) {
+  eventEmitter.emit("queryingStatus", false);
+  eventEmitter.emit("error", "Failed to fetch the query.");
+}
+
+/**
+ * Handles the event whenever the Comunica query fails. 
+ * @param {Error} error the object returned by Comunica engine when the query function fails.   
+ * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
+ */
+function handleQueryFail(error, eventEmitter) {
+  eventEmitter.emit("queryingStatus", false)
+  eventEmitter.emit("error", "Something went wrong while preparing the query.")
+}
+
+/**
+ * Handles the event whenever the execution of the query fails. 
+ * @param {Error} error the object returned by Comunica when the parsing of metadata or execution of the query fails. 
+ * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
+ */
+function handleQueryExecutionFail(error, eventEmitter){
+  eventEmitter.emit("queryingStatus", false)
+  eventEmitter.emit("error", "Something went wrong while executing the query.")
 }
 
 export default RightField;
