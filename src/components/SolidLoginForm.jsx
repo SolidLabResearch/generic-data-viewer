@@ -15,6 +15,10 @@ function SolidLoginForm(props) {
     });
   }
 
+  /**
+   * Handling what should happen when the user trying to log in.
+   * @param {Event} event the event calling the EventListener  
+   */
   function handleLogin(event) {
     event.preventDefault();
     props.onClick()
@@ -26,6 +30,10 @@ function SolidLoginForm(props) {
     });
   }
 
+  /**
+   * Handling what should happen whe the user logs out. 
+   * @param {Event} event the event calling the EventListener 
+   */
   function handleLogout(event) {
     event.preventDefault();
     props.onClick()
