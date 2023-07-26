@@ -18,7 +18,7 @@ npm start
 
 Which will start the web application
 
-### Configuration file 
+### Configuration file
 
 The configuration file follows a simple structure. 
 
@@ -52,8 +52,8 @@ Also literals can be lots of things e.g. a float, integer, string, birthdate, pr
 By clarifying what the expected type is of the query result corresponding to a given variable 
 we can fully interpret how we can display and represent the result. 
 
-You can specify the type of a variable by extending its name with the type in the query as such: ```variableName_variableType```.
-The underscore ```_``` here is crucial to make a clear distinction between name and type. 
+You can specify the type of a variable by extending its name with the type in the query as such: `variableName_variableType`.
+The underscore `_` here is crucial to make a clear distinction between name and type. 
 
 ### Representation Mapper 
 
@@ -72,16 +72,16 @@ The mapper follows a structure:
 }
 ```
 
-With ```typeName``` being the name of the variable as defined in the ```query``` 
+With `typeName` being the name of the variable as defined in the `query`
 which is defined in [the configuration file](#configuration-file). 
-The function ```mapperFunction``` takes the query result for the corresponding variable and 
+The function `mapperFunction` takes the query result for the corresponding variable and 
 returns either a string or a [React](https://react.dev/) component (see below).
 Examples of how you can do this can already be found in that same [file](./src/typeMapper.js). 
 
 The web application uses [gridjs-react](https://gridjs.io/docs/integrations/react) internally.
 This allows us to add [html](https://nl.wikipedia.org/wiki/HyperText_Markup_Language) or 
 [React](https://react.dev/) components as representations of the variable.
-To do this you need to import ```_``` function from [gridjs-react module](https://www.npmjs.com/package/gridjs-react) and 
+To do this you need to import `_` function from [gridjs-react module](https://www.npmjs.com/package/gridjs-react) and 
 call it with the component as its variable.
 An example for this is also already provided in the [typeMapper.js](./src/typeMapper.js).
 
@@ -90,7 +90,7 @@ An example for this is also already provided in the [typeMapper.js](./src/typeMa
 To support the sorting of the table you can also define sorting comparators for [variable types](#adding-variable-type).
 This can be done in the [typeMapper.js](./src/typeMapper.js) file. 
 
-The ```typeSortMapper``` object follows the following structure: 
+The `typeSortMapper` object follows the following structure: 
 
 ```js
 {
@@ -99,16 +99,20 @@ The ```typeSortMapper``` object follows the following structure:
 }
 ```
 
-With ```typeName``` being the name of the variable as defined in the query and 
-the sortFunction a comparator that takes 2 values of type ```typeName```.
+With `typeName` being the name of the variable as defined in the query and 
+the sortFunction a comparator that takes 2 values of type `typeName`.
 If a type has no comparator defined it gets sorted as a string. 
 
 ## Testing with local pods 
 
 To create a local pod with which you can test for example authentication you can follow the following steps: 
 
-- add your data and ```.acl``` files in the ```initial-pod-data``` folder. These files will be available in the pod relative to ```http://localhost:8080/example/```.
--  Prepare the pods by executing ```npm run prepare:pods```. 
--  Start the pods by executing ```npm run start:pods```
--  Add your query as described in [the configuration file section](#configuration-file)
--  If you want to log in for authentication you can use the idp ```http://localhost:8080``` and the credentials in the ```seeded-pod-config.json``` file. 
+- Add your data and `.acl` files in the `initial-pod-data` folder. 
+  These files will be available in the pod relative to `http://localhost:8080/example/`.
+  We already added files for the resource `favourite-books`.
+- Prepare the pods by executing `npm run prepare:pods`. 
+- Start the pods by executing `npm run start:pods`.
+- Add your query as described in [the configuration file section](#configuration-file).
+  We already added a query to list books based on the resource `favourite-books` to `src/config.json`.
+- Log in with the IDP `http://localhost:8080` and 
+  the credentials in the file `seeded-pod-config.json`. 
