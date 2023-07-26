@@ -105,6 +105,10 @@ button{
     margin-right: 5px;
 }
 
+#idp-label{
+    margin-right: 0;
+}
+
 .error-label{
     color: red;
     justify-self: center;

@@ -4,6 +4,7 @@
     "mainAppColor": "lightgray", 
     "backgroundColor": "#fff",
     "queryFolder": "queries",
+    "showMilliseconds": false, 
     "footer": "<p><a href='https://idlab.technology/'>IDLab</a> - <a href='https://www.imec.be/nl'>imec</a> - <a href='https://www.ugent.be/'>UGent</a></p>",
     "queries": [
         {
@@ -26,6 +27,13 @@
             "description": "A small test to test the functionality of the Web app concerning images",
             "id": "789",
             "sources": ["https://ruben.verborgh.org/"]
+        },
+        {
+            "queryLocation": "books.ttl",
+            "name": "A list of my favorite books",
+            "description": "A short list of some of my favorite books, which I keep secret.",
+            "id": "321",
+            "sources": ["http://localhost:8080/example/favourite-books"]
         }
     ]
 }

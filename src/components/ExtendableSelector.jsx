@@ -27,7 +27,7 @@ function ExtendableSelector({ extendContent, children }) {
             className="arrow"
           />
         </div>
-        <p className="extended-content">{extended && extendContent}</p>
+        {extended && <p className="extended-content">{extendContent}</p>}
       </li>
     </>
   );

@@ -54,7 +54,10 @@ function RightField(props) {
     setErrorMessage
   );
 
-  const onQueryChanged = () => {
+  /**
+   * starts the execution of a query and adjusts the UI respectively. 
+   */
+  const startQueryExecution = () => {
     setTime(0);
     if (selectedQuery) {
       setErrorMessage(undefined);
@@ -68,7 +71,7 @@ function RightField(props) {
   };
 
   useEffect(() => {
-    onQueryChanged();
+    startQueryExecution();
   }, [selectedQuery]);
 
   return (
@@ -81,7 +84,7 @@ function RightField(props) {
           <button
             disabled={!selectedQuery}
             id="refresh-button"
-            onClick={onQueryChanged}
+            onClick={startQueryExecution}
           >
             Refresh
           </button>
@@ -91,10 +94,11 @@ function RightField(props) {
           {selectedQuery && (
             <div className="information-box">
               <label>
-                <strong>Result Count:</strong>
-                {results.length}
-              </label>
+              <strong>Result Count:</strong>
+              {results.length}
+            </label>
             </div>
+            
           )}
           {selectedQuery && (
             <strong id="query-name-label">{selectedQuery.name}</strong>
@@ -102,10 +106,12 @@ function RightField(props) {
           {selectedQuery && (
             <div className="information-box stopWatch">
               <label>
-                <strong>Runtime:</strong>
-                <Time time={time} />
-              </label>
+              {isQuerying && <strong>Runtime:</strong>}
+              {!isQuerying && <strong>Finished in:</strong>}
+              <Time time={time} showMilliseconds={config.showMilliseconds} />
+            </label>
             </div>
+            
           )}
         </div>
         <SolidLoginForm onClick={disableIterator} />
