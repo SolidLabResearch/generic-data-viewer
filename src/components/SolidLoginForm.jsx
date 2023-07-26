@@ -17,7 +17,7 @@ function SolidLoginForm(props) {
       } else {
         setName(webId);
       }
-    });
+    }).catch(_ => setName(webId));
   }
 
   /**
