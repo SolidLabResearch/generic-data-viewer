@@ -104,3 +104,7 @@ button{
     margin: 0;
     margin-right: 5px;
 }
+
+#idp-label{
+    margin-right: 0;
+}
