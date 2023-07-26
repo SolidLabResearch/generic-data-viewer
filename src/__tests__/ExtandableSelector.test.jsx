@@ -1,4 +1,4 @@
-import { act, findByTestId, render, screen } from "@testing-library/react"
+import { act, render, screen } from "@testing-library/react"
 import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom'
 import ExtendableSelector from "../components/ExtendableSelector"
