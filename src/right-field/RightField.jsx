@@ -184,7 +184,7 @@ function bindingStreamAdder(item, variables, setter) {
   for (let variable of variables) {
     const value = item.get(variable) ? item.get(variable) : "";
     const type = variable.split("_")[1];
-    const componentCaller = typeRepresentationMapper[type];
+    let componentCaller = typeRepresentationMapper[type];
     componentCaller = componentCaller ? componentCaller : (text) => text.id;
     newValues.push(componentCaller(value));
   }
