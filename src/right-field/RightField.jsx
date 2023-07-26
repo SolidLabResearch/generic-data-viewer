@@ -1,10 +1,17 @@
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import ResultsTable from "./results-table/ResultsTable";
 import "./RightField.css";
-import QueryWorker from "worker-loader!../workers/worker";
 import { typeRepresentationMapper } from "../typeMapper.js";
 import config from "../config.json";
 import Time from "../components/Time";
+import SolidLoginForm from "../components/SolidLoginForm";
+import {
+  fetch as authFetch,
+  getDefaultSession,
+} from "@inrupt/solid-client-authn-browser";
+import { QueryEngine } from "@comunica/query-sparql";
+
+const EventEmitter = require("events");
 
 if (!config.queryFolder) {
   config.queryFolder = "./";
@@ -14,7 +21,8 @@ if (config.queryFolder.substring(config.queryFolder.length - 1) !== "/") {
   config.queryFolder = `${config.queryFolder}/`;
 }
 
-let queryWorker = undefined;
+const myEngine = new QueryEngine();
+let iterator = undefined;
 
 /**
  *
@@ -36,28 +44,27 @@ function RightField(props) {
     return () => clearInterval(intervalId);
   }, [time, isQuerying]);
 
-  useEffect(() => {
-    configureQueryWorker(adder, setVariables, setQuerying);
-  }, []);
-
   let adder = adderFunctionMapper["bindings"](setResults);
 
-  const onQueryChanged = () => {
+  const eventEmitter = makeUIEventEmitter(setVariables, adder, setQuerying);
+
+  /**
+   * starts the execution of a query and adjusts the UI respectively. 
+   */
+  const startQueryExecution = () => {
     setTime(0);
     if (selectedQuery) {
-      if (isQuerying) {
-        queryWorker.terminate();
-        configureQueryWorker(adder, setVariables, setQuerying);
-      }
+      disableIterator();
       setResults([]);
       setVariables([]);
+      iterator = undefined;
       setQuerying(true);
-      executeQuery(selectedQuery, queryWorker);
+      executeQuery(selectedQuery, eventEmitter);
     }
   };
 
   useEffect(() => {
-    onQueryChanged();
+    startQueryExecution();
   }, [selectedQuery]);
 
   return (
@@ -66,45 +73,83 @@ function RightField(props) {
       style={{ backgroundColor: config.mainAppColor }}
     >
       <div className="control-section">
-        <button
-          disabled={!selectedQuery}
-          id="refresh-button"
-          onClick={onQueryChanged}
-        >
-          Refresh
-        </button>
+        <div className="refresh-button-container">
+          <button
+            disabled={!selectedQuery}
+            id="refresh-button"
+            onClick={startQueryExecution}
+          >
+            Refresh
+          </button>
+        </div>
+
         <div id="query-information">
           {selectedQuery && (
-            <label>
+            <div className="information-box">
+              <label>
               <strong>Result Count:</strong>
               {results.length}
             </label>
+            </div>
+            
           )}
           {selectedQuery && (
             <strong id="query-name-label">{selectedQuery.name}</strong>
           )}
           {selectedQuery && (
-            <label className="stopWatch">
+            <div className="information-box stopWatch">
+              <label>
               {isQuerying && <strong>Runtime:</strong>}
               {!isQuerying && <strong>Finished in:</strong>}
               <Time time={time} showMilliseconds={config.showMilliseconds} />
             </label>
+            </div>
+            
           )}
         </div>
-        <button id="login-button">Login</button>
+        <SolidLoginForm onClick={disableIterator} />
       </div>
       <ResultsTable
         results={results}
         variables={variables}
+        isQuerying={isQuerying}
         selectedQuery={selectedQuery}
       />
     </div>
   );
 }
 
+/**
+ * Creates an EventEmitter that handles how the UI states should change on certain events.
+ * @param {Function} setVariables sets the variables of the query.
+ * @param {Function} resultAdder a function that processes the results.
+ * @param {Function} setIsQuerying a function that sets whether the query is finished or not.
+ * @returns
+ */
+function makeUIEventEmitter(setVariables, resultAdder, setQuerying) {
+  let eventEmitter = new EventEmitter();
+
+  // The variables of the query
+  eventEmitter.on("variables", (variables) => {
+    setVariables(variables);
+  });
+
+  // A new result
+  eventEmitter.on("result", (result) => {
+    resultAdder(result);
+  });
+
+  // Whether there is currently being queried or not
+  eventEmitter.on("queryingStatus", (isQuerying) => {
+    setQuerying(isQuerying);
+  });
+
+  return eventEmitter;
+}
+
 const adderFunctionMapper = {
   bindings: (setter) => {
-    return (item, variable) => bindingStreamAdder(item, variable, setter);
+    return ({ item, variables }) => bindingStreamAdder(item, variables, setter);
   },
 };
 
@@ -117,10 +162,10 @@ const adderFunctionMapper = {
 function bindingStreamAdder(item, variables, setter) {
   let newValues = [];
   for (let variable of variables) {
-    let value = item[variable] ? item[variable] : "";
+    let value = item.get(variable) ? item.get(variable) : "";
     let type = variable.split("_")[1];
     let componentCaller = typeRepresentationMapper[type];
-    componentCaller = componentCaller ? componentCaller : (text) => text.value;
+    componentCaller = componentCaller ? componentCaller : (text) => text.id;
     newValues.push(componentCaller(value));
   }
 
@@ -130,47 +175,116 @@ function bindingStreamAdder(item, variables, setter) {
 }
 
 /**
- *
- * @param {Function} adder function which processes the result, takes the result as argument
- * @param {Function} variableSetter setter function for the variables, takes a list of variable names
- * @param {Function} setIsQuerying boolean setter function for whether the worker is still executing a query or not
+ * If there is currently an iterator active iterator, either a BindingStream or QuadStream, it removes all event listeners and stops the execution.
  */
-function configureQueryWorker(adder, variableSetter, setIsQuerying) {
-  queryWorker = new QueryWorker();
-  let variablesMain = [];
-  queryWorker.onmessage = ({ data }) => {
-    switch (data.type) {
-      case "result":
-        let binding = JSON.parse(data.result);
-        let entries = binding.entries;
-        adder(entries, variablesMain);
-
-        break;
-      case "end":
-        setIsQuerying(false);
-        break;
-      case "metadata": {
-        variablesMain = data.metadata.variables.map((val) => val.value);
-        variableSetter(variablesMain);
-        break;
-      }
-    }
-  };
+function disableIterator() {
+  if (iterator) {
+    iterator.removeAllListeners("end");
+    iterator.removeAllListeners("data");
+    iterator.removeAllListeners("error");
+    iterator.destroy();
+  }
 }
 
 /**
- * A function that executes a given query and processes every result as a stream based on the functions provided.
- * @param {query} query the query which gets executed
- * @param {Worker} queryWorker the worker which will be used to execute the given query
+ * A function that executes a given query and processes every result as a stream based on the EventEmitter.
+ * @param {query} query the query which is to be executed
+ * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
  */
-async function executeQuery(query, queryWorker) {
+async function executeQuery(query, eventEmitter) {
   try {
     let result = await fetch(`${config.queryFolder}${query.queryLocation}`);
     query.queryText = await result.text();
-    queryWorker.postMessage({ selectedQuery: query });
+    let fetchFunction = getDefaultSession().info.isLoggedIn ? authFetch : fetch;
+    return handleQueryExecution(
+      await myEngine.query(query.queryText, {
+        sources: query.sources,
+        fetch: fetchFunction,
+      }),
+      eventEmitter
+    );
   } catch (error) {
+    eventEmitter.emit("queryingStatus", false);
     handleQueryFetchFail(error);
   }
+}
+
+/**
+ * A function that given a QueryType processes every result as a stream.
+ *
+ * @param {QueryType} execution a query execution
+ * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
+ */
+async function handleQueryExecution(execution, eventEmitter) {
+  try {
+    let metadata = await execution.metadata();
+    let variables = metadata.variables.map((val) => {
+      return val.value;
+    });
+
+    eventEmitter.emit("variables", variables);
+
+    queryTypeHandlers[execution.resultType](
+      await execution.execute(),
+      variables,
+      eventEmitter
+    );
+  } catch (error) {
+    console.error(error.message); //TODO
+  }
+}
+
+const queryTypeHandlers = {
+  bindings: configureBindingStream,
+  quads: configureQuadStream,
+  boolean: configureBool,
+};
+
+/**
+ * Configures how a boolean query gets processed.
+ * @param {Boolean} result the result of a boolean query
+ */
+function configureBool(result) {
+  postMessage({ type: "result", result: result });
+  postMessage({ type: "end", message: "blank" });
+}
+
+/**
+ *
+ * @param {List<String>} variables all the variables of the query behind the binding stream.
+ * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
+ */
+function configureIterator(variables, eventEmitter) {
+  iterator.on("data", (data) => {
+    eventEmitter.emit("result", { variables: variables, item: data });
+  });
+
+  iterator.on("end", () => {
+    eventEmitter.emit("queryingStatus", false);
+  });
+}
+
+/**
+ * Configures how a query resulting in a stream of quads should be processed.
+ * @param {AsyncIterator<Quad> & ResultStream<Quad>>} quadStream a stream of Quads
+ * @param {BindingStream} bindingStream a stream of Bindings
+ * @param {List<String>} variables all the variables of the query behind the binding stream.
+ * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
+ */
+function configureQuadStream(quadStream, variables, eventEmitter) {
+  iterator = quadStream;
+  configureIterator(variables, eventEmitter);
+}
+
+/**
+ * Configures how a query resulting in a stream of bindings should be processed.
+ * @param {BindingStream} bindingStream a stream of Bindings
+ * @param {List<String>} variables all the variables of the query behind the binding stream.
+ * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
+ */
+function configureBindingStream(bindingStream, variables, eventEmitter) {
+  iterator = bindingStream;
+  configureIterator(variables, eventEmitter);
 }
 
 /**

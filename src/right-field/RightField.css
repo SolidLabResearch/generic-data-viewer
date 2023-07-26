@@ -19,24 +19,48 @@ button{
 }
 
 #refresh-button{
-    float: inline-start;
+    width: fit-content;
 }
 
 #query-name-label{
+    margin-right: 40px;
     height: 100%;
     font-size: calc(0.9vw + 0.9vh);
 }
 
-#login-button{
-    float: inline-end;
+.form-button{
+    width: fit-content;
+    margin: inherit 0
+}
+
+.refresh-button-container{
+    flex: 1;
+    margin: 0;
+    height: 100%;
+    display: flex;
+    align-items: center;
 }
 
 #query-information{
+    text-align: center;
     display: flex;
+    justify-content: center;
     align-items: center;
     height: 100%;
-    margin: 0;
     width: fit-content;
+}
+
+
+.information-box{
+    overflow: hidden;
+}
+
+.information-box label{
+    display: flex;
+    min-width: 150px;
+    justify-content: flex-start;
+    white-space: nowrap;
+    align-items: center;
 }
 
 #query-information *{
@@ -44,5 +68,43 @@ button{
 }
 
 .stopWatch{
+    margin-right: 0;
+    margin-left: 20px;
+}
+
+.login-form{
+    flex: 1;
+    display: flex;
+    margin: 0;
+    margin-left: auto;
+    height: 100%;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.login-form form{
+    margin: 0;
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: end;
+}
+
+
+
+#logged-in-label{
+    display: flex;
+    margin: 0;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+#logged-in-label strong{
+    margin: 0;
+    margin-right: 5px;
+}
+
+#idp-label{
     margin-right: 0;
 }

@@ -2,10 +2,10 @@
 .results-table{
     display: inline-block;
     position: relative;
-    margin-top: 0;
+    margin: 0 inherit;
     height: calc(95% - 60px);
     width: calc(100% - 40px);
-    overflow: hidden;
+    overflow: scroll;
 
 }
 
@@ -17,26 +17,14 @@
     transform: translate(-50%, -50%);
 }
 
-.grid-body{
-    overflow: auto;
-}
-
-.gridjs-table{
-    overflow: auto;
-    max-height: 100%;
-}
-
-.gridjs-container{
-    height: 100%;
-    overflow: hidden;
-}
 
 .gridjs-wrapper{
-    max-height: 100%;
-    overflow: hidden;
+    margin-left: 0
 }
 
-.grid-wrapper{
-    height: 100%;
-    overflow: hidden;
+
+.gridjs-td *{
+    padding: 0;
+    margin: 0;
+    max-width: 100%;
 }
