@@ -22,10 +22,11 @@ function ResultsTable(props) {
 
   return (
     <div className="results-table">
-      {!selectedQuery && <label>Please select a query.</label>}
+      {!selectedQuery && <label data-testid="no-query-label">Please select a query.</label>}
       {selectedQuery &&
         <Grid style={{ td: { "text-align": "center" }, th: { "text-align": "center" }, container: { "margin": "0" } }}
           className={{ tbody: "grid-body" }}
+          data-testid="gridjs"
           data={results}
           sort={true}
           autowidth={false}
