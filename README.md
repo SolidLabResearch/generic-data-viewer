@@ -102,3 +102,13 @@ The ```typeSortMapper``` object follows the following structure:
 With ```typeName``` being the name of the variable as defined in the query and 
 the sortFunction a comparator that takes 2 values of type ```typeName```.
 If a type has no comparator defined it gets sorted as a string. 
+
+## Testing with local pods 
+
+To create a local pod with which you can test for example authentication you can follow the following steps: 
+
+- add your data and ```.acl``` files in the ```initial-pod-data``` folder. These files will be available in the pod relative to ```http://localhost:8080/example/```.
+-  Prepare the pods by executing ```npm run prepare:pods```. 
+-  Start the pods by executing ```npm run start:pods```
+-  Add your query as described in [the configuration file section](#configuration-file)
+-  If you want to log in for authentication you can use the idp ```http://localhost:8080``` and the credentials in the ```seeded-pod-config.json``` file. 
