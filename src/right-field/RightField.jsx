@@ -30,7 +30,7 @@ let iterator = undefined;
  * @returns {Component} A React component that displays the given query in a table, with the functionality to refresh the results and to login for additional authorization.
  */
 function RightField(props) {
-  let selectedQuery = props.query;
+  const selectedQuery = props.query;
   const [results, setResults] = useState([]);
   const [variables, setVariables] = useState([]);
   const [isQuerying, setQuerying] = useState(false);
@@ -142,7 +142,7 @@ function makeUIEventEmitter(
   setQuerying,
   setErrorMessage
 ) {
-  let eventEmitter = new EventEmitter();
+  const eventEmitter = new EventEmitter();
 
   // An error message
   eventEmitter.on("error", (error) => {
@@ -180,11 +180,11 @@ const adderFunctionMapper = {
  * @param {Function} setter function to set the table entries.
  */
 function bindingStreamAdder(item, variables, setter) {
-  let newValues = [];
+  const newValues = [];
   for (let variable of variables) {
-    let value = item.get(variable) ? item.get(variable) : "";
-    let type = variable.split("_")[1];
-    let componentCaller = typeRepresentationMapper[type];
+    const value = item.get(variable) ? item.get(variable) : "";
+    const type = variable.split("_")[1];
+    const componentCaller = typeRepresentationMapper[type];
     componentCaller = componentCaller ? componentCaller : (text) => text.id;
     newValues.push(componentCaller(value));
   }
@@ -206,9 +206,15 @@ function disableIterator() {
   }
 }
 
+/**
+ * Fetches the the query file from the given query and returns its text.  
+ * @param {query} query the query which is to be executed
+ * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
+ * @returns the text from the file location provided by the query relative to query location defined in the config file.  
+ */
 async function fetchQuery(query, eventEmitter) {
   try {
-    let result = await fetch(`${config.queryFolder}${query.queryLocation}`);
+    const result = await fetch(`${config.queryFolder}${query.queryLocation}`);
     return await result.text();
   } catch (error) {
     handleQueryFetchFail(error, eventEmitter);
@@ -223,7 +229,7 @@ async function fetchQuery(query, eventEmitter) {
 async function executeQuery(query, eventEmitter) {
   try {
     query.queryText = await fetchQuery(query, eventEmitter);
-    let fetchFunction = getDefaultSession().info.isLoggedIn ? authFetch : fetch;
+    const fetchFunction = getDefaultSession().info.isLoggedIn ? authFetch : fetch;
     return handleQueryExecution(
       await myEngine.query(query.queryText, {
         sources: query.sources,
@@ -244,8 +250,8 @@ async function executeQuery(query, eventEmitter) {
  */
 async function handleQueryExecution(execution, eventEmitter) {
   try {
-    let metadata = await execution.metadata();
-    let variables = metadata.variables.map((val) => {
+    const metadata = await execution.metadata();
+    const variables = metadata.variables.map((val) => {
       return val.value;
     });
 
