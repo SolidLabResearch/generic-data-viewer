@@ -4,19 +4,26 @@
   "private": true,
   "dependencies": {
     "@comunica/query-sparql": "^2.6.9",
+    "@solid/community-server": "^6.0.1",
+    "@inrupt/solid-client": "^1.29.0",
+    "@inrupt/solid-client-authn-browser": "^1.17.1",
+    "@inrupt/vocab-common-rdf": "^1.0.5",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "events": "^3.3.0",
     "gridjs": "^6.0.6",
     "gridjs-react": "^6.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4",
-    "webpack": "^5.88.1",
-    "webpack-cli": "^5.1.4"
+    "react-scripts": "5.0.1"
   },
   "scripts": {
+    "prepare:pods": "npm run prepare:pods:accounts && npm run prepare:pods:data",
+    "prepare:pods:accounts": "node scripts/add-pod-accounts.mjs",
+    "prepare:pods:data": "cpy initial-pod-data/* pods/example/ --flat",
+    "start:pods": "npx @solid/community-server -c @css:config/file-no-setup.json -f pods -p 8080",
+    "reset:pods": "npx rimraf pods && npm run prepare:pods",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
@@ -46,6 +53,6 @@
   "devDependencies": {
     "assert": "^2.0.0",
     "buffer": "^6.0.3",
-    "worker-loader": "^3.0.8"
+    "cpy-cli": "^5.0.0"
   }
 }
