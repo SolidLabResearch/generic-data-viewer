@@ -53,6 +53,7 @@ function SolidLoginForm(props) {
           <input
             name="idp"
             type="text"
+            id="idp"
             placeholder="Identity Provider..."
             defaultValue={props.defaultIDP}
           />
