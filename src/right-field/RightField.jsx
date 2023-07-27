@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import ResultsTable from "./results-table/ResultsTable";
 import "./RightField.css";
 import { typeRepresentationMapper } from "../typeMapper.js";
@@ -44,16 +44,16 @@ function RightField(props) {
     return () => clearInterval(intervalId);
   }, [time, isQuerying]);
 
-  let adder = adderFunctionMapper["bindings"](setResults);
+  let adder = useCallback((obj) => adderFunctionMapper["bindings"](setResults)(obj), []);
 
-  const eventEmitter = makeUIEventEmitter(setVariables, adder, setQuerying);
 
   /**
    * starts the execution of a query and adjusts the UI respectively.
    */
-  const startQueryExecution = () => {
+  const startQueryExecution = useCallback(() => {
     setTime(0);
     if (selectedQuery) {
+      const eventEmitter = makeUIEventEmitter(setVariables, adder, setQuerying);
       disableIterator();
       setResults([]);
       setVariables([]);
@@ -61,11 +61,12 @@ function RightField(props) {
       setQuerying(true);
       executeQuery(selectedQuery, eventEmitter);
     }
-  };
+  }, [selectedQuery, adder]);
+
 
   useEffect(() => {
     startQueryExecution();
-  }, [selectedQuery]);
+  }, [selectedQuery, startQueryExecution]);
 
   return (
     <div
