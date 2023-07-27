@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import ResultsTable from "./results-table/ResultsTable";
 import "./RightField.css";
 import { typeRepresentationMapper } from "../typeMapper.js";
@@ -45,21 +45,16 @@ function RightField(props) {
     return () => clearInterval(intervalId);
   }, [time, isQuerying]);
 
-  let adder = adderFunctionMapper["bindings"](setResults);
+  let adder = useCallback((obj) => adderFunctionMapper["bindings"](setResults)(obj), []);
 
-  const eventEmitter = makeUIEventEmitter(
-    setVariables,
-    adder,
-    setQuerying,
-    setErrorMessage
-  );
 
   /**
-   * starts the execution of a query and adjusts the UI respectively. 
+   * starts the execution of a query and adjusts the UI respectively.
    */
-  const startQueryExecution = () => {
+  const startQueryExecution = useCallback(() => {
     setTime(0);
     if (selectedQuery) {
+      const eventEmitter = makeUIEventEmitter(setVariables, adder, setQuerying, setErrorMessage);
       setErrorMessage(undefined);
       disableIterator();
       setResults([]);
@@ -68,11 +63,12 @@ function RightField(props) {
       setQuerying(true);
       executeQuery(selectedQuery, eventEmitter);
     }
-  };
+  }, [selectedQuery, adder]);
+
 
   useEffect(() => {
     startQueryExecution();
-  }, [selectedQuery]);
+  }, [selectedQuery, startQueryExecution]);
 
   return (
     <div
@@ -92,29 +88,27 @@ function RightField(props) {
 
         <div id="query-information">
           {selectedQuery && (
-            <div className="information-box">
-              <label>
-              <strong>Result Count:</strong>
-              {results.length}
-            </label>
-            </div>
-            
+            <strong id="query-name-label">{selectedQuery.name}</strong>
           )}
           {selectedQuery && (
-            <strong id="query-name-label">{selectedQuery.name}</strong>
+            <div className="information-box">
+              <label>
+                <strong>Result Count:</strong>
+                {results.length}
+              </label>
+            </div>
           )}
           {selectedQuery && (
             <div className="information-box stopWatch">
               <label>
-              {isQuerying && <strong>Runtime:</strong>}
-              {!isQuerying && <strong>Finished in:</strong>}
-              <Time time={time} showMilliseconds={config.showMilliseconds} />
-            </label>
+                {isQuerying && <strong>Runtime:</strong>}
+                {!isQuerying && <strong>Finished in:</strong>}
+                <Time time={time} showMilliseconds={config.showMilliseconds} />
+              </label>
             </div>
-            
           )}
         </div>
-        <SolidLoginForm onClick={disableIterator} />
+        <SolidLoginForm defaultIDP={config.defaultIDP} onClick={disableIterator} />
       </div>
       {errorMessage && <label className="error-label">{errorMessage}</label>}
       {!errorMessage && (

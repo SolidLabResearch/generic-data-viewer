@@ -5,6 +5,7 @@
     "backgroundColor": "#fff",
     "queryFolder": "queries",
     "showMilliseconds": false, 
+    "defaultIDP": "https://pod.playground.solidlab.be/",
     "footer": "<p><a href='https://idlab.technology/'>IDLab</a> - <a href='https://www.imec.be/nl'>imec</a> - <a href='https://www.ugent.be/'>UGent</a></p>",
     "queries": [
         {
