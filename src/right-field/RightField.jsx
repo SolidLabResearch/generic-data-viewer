@@ -49,7 +49,7 @@ function RightField(props) {
   const eventEmitter = makeUIEventEmitter(setVariables, adder, setQuerying);
 
   /**
-   * starts the execution of a query and adjusts the UI respectively. 
+   * starts the execution of a query and adjusts the UI respectively.
    */
   const startQueryExecution = () => {
     setTime(0);
@@ -85,26 +85,24 @@ function RightField(props) {
 
         <div id="query-information">
           {selectedQuery && (
-            <div className="information-box">
-              <label>
-              <strong>Result Count:</strong>
-              {results.length}
-            </label>
-            </div>
-            
+            <strong id="query-name-label">{selectedQuery.name}</strong>
           )}
           {selectedQuery && (
-            <strong id="query-name-label">{selectedQuery.name}</strong>
+            <div className="information-box">
+              <label>
+                <strong>Result Count:</strong>
+                {results.length}
+              </label>
+            </div>
           )}
           {selectedQuery && (
             <div className="information-box stopWatch">
               <label>
-              {isQuerying && <strong>Runtime:</strong>}
-              {!isQuerying && <strong>Finished in:</strong>}
-              <Time time={time} showMilliseconds={config.showMilliseconds} />
-            </label>
+                {isQuerying && <strong>Runtime:</strong>}
+                {!isQuerying && <strong>Finished in:</strong>}
+                <Time time={time} showMilliseconds={config.showMilliseconds} />
+              </label>
             </div>
-            
           )}
         </div>
         <SolidLoginForm onClick={disableIterator} />

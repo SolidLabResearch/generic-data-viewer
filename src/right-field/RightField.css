@@ -24,8 +24,10 @@ button{
 
 #query-name-label{
     margin-right: 40px;
-    height: 100%;
-    font-size: calc(0.9vw + 0.9vh);
+    text-align: center;
+    border: 1px red solid;
+    justify-self: center;
+    align-self: center;
 }
 
 .form-button{
