@@ -105,7 +105,7 @@ function RightField(props) {
             </div>
           )}
         </div>
-        <SolidLoginForm onClick={disableIterator} />
+        <SolidLoginForm defaultIDP={config.defaultIDP} onClick={disableIterator} />
       </div>
       <ResultsTable
         results={results}
