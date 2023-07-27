@@ -109,3 +109,12 @@ button{
 #idp-label{
     margin-right: 0;
 }
+
+.error-label{
+    color: red;
+    justify-self: center;
+    align-self: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}

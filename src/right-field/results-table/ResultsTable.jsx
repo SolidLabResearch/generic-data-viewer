@@ -24,7 +24,7 @@ function ResultsTable(props) {
     <div className="results-table">
       {!selectedQuery && <label>Please select a query.</label>}
       {variables.length > 0 &&
-        <Grid style={{ td: { "text-align": "center" }, th: { "text-align": "center", "height": "fit-content" }, container: { "margin": "0" }, table: {"overflow": "hidden"} }}
+        <Grid style={{ th: { "height": "fit-content" }, container: { "margin": "0" }, table: {"overflow": "hidden"} }}
           className={{ tbody: "grid-body" }}
           data={results}
           sort={true}
