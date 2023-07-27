@@ -25,7 +25,6 @@ button{
 #query-name-label{
     margin-right: 40px;
     text-align: center;
-    border: 1px red solid;
     justify-self: center;
     align-self: center;
 }
