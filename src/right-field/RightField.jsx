@@ -92,7 +92,7 @@ function RightField(props) {
           {selectedQuery && (
             <strong id="query-name-label">{selectedQuery.name}</strong>
           )}
-          {selectedQuery && (
+          {(selectedQuery && resultType !== "boolean") && (
             <div className="information-box">
               <label>
                 <strong>Result Count:</strong>
