@@ -227,6 +227,7 @@ async function fetchQuery(query, eventEmitter) {
  * A function that executes a given query and processes every result as a stream based on the EventEmitter.
  * @param {query} query the query which is to be executed
  * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
+ * @param {Function} adder function that sets UI state of the query result
  */
 async function executeQuery(query, eventEmitter, resultAdder) {
   try {
@@ -252,7 +253,9 @@ async function executeQuery(query, eventEmitter, resultAdder) {
  * A function that given a QueryType processes every result as a stream.
  *
  * @param {QueryType} execution a query execution
+ * @param {query} query the query which is being executed
  * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
+ * @param {Function} adder function that sets UI state of the query result
  */
 async function handleQueryExecution(execution, query, eventEmitter, resultAdder) {
   try {
@@ -292,6 +295,8 @@ const queryTypeHandlers = {
 /**
  * Configures how a boolean query gets processed.
  * @param {Boolean} result the result of a boolean query
+ * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
+ * @param {Function} adder function that handles the result of a query as it should be processed
  */
 function configureBool(result, eventEmitter, adder) {
   eventEmitter.emit("queryingStatus", false);
@@ -302,6 +307,7 @@ function configureBool(result, eventEmitter, adder) {
  *
  * @param {List<String>} variables all the variables of the query behind the binding stream.
  * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
+ * @param {Function} adder function that handles the result of a query as it should be processed
  */
 function configureIterator(variables, eventEmitter, adder) {
   iterator.on("data", (data) => {
@@ -319,6 +325,7 @@ function configureIterator(variables, eventEmitter, adder) {
  * @param {BindingStream} bindingStream a stream of Bindings
  * @param {List<String>} variables all the variables of the query behind the binding stream.
  * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
+ * @param {Function} adder function that handles the result of a query as it should be processed
  */
 function configureQuadStream(quadStream, eventEmitter, adder, variables) {
   iterator = quadStream;
@@ -330,6 +337,7 @@ function configureQuadStream(quadStream, eventEmitter, adder, variables) {
  * @param {BindingStream} bindingStream a stream of Bindings
  * @param {List<String>} variables all the variables of the query behind the binding stream.
  * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
+ * @param {Function} adder function that handles the result of a query as it should be processed
  */
 function configureBindingStream(bindingStream, eventEmitter, adder, variables) {
   iterator = bindingStream;
