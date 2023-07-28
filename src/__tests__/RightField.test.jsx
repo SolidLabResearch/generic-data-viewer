@@ -6,11 +6,9 @@ import { TextEncoder, TextDecoder } from 'util';
 
 Object.assign(global, { TextDecoder, TextEncoder });
 
-
 if (!config.queryFolder) {
     config.queryFolder = "./";
 }
-
 
 test("When no query is selected there is no query information", () => {
     const {container} = render(<RightField/>)
@@ -23,4 +21,3 @@ test("When a query is selected, the query information is shown", () => {
     let queryInformationDiv = container.querySelector('#query-information')
     expect(queryInformationDiv.children.length).not.toEqual(0)
 })
-

@@ -3,9 +3,6 @@ import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom'
 import ExtendableSelector from "../components/ExtendableSelector"
 
-
-
-
 test('Load with hidden content', () => {
     render(<ExtendableSelector extendContent="Hello World!"/>)
     const hiddenContent = screen.queryByTestId("extended-content")

@@ -3,8 +3,6 @@ import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom'
 import SelectionTable from "../selection-table/SelectionTable"
 
-
-
 test('There is a list item for every query', () => {
     let queries = ['test1', 'test2', 'test3']
     const {container} = render(<SelectionTable queries={queries}/>)
