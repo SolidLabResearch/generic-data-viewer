@@ -22,6 +22,7 @@ if (config.queryFolder.substring(config.queryFolder.length - 1) !== "/") {
 }
 
 const myEngine = new QueryEngine();
+let adder;
 let iterator = undefined;
 
 /**
@@ -32,6 +33,7 @@ let iterator = undefined;
 function RightField(props) {
   const selectedQuery = props.query;
   const [results, setResults] = useState([]);
+  const [resultType, setResultType] = useState(undefined);
   const [variables, setVariables] = useState([]);
   const [isQuerying, setQuerying] = useState(false);
   const [errorMessage, setErrorMessage] = useState(undefined);
@@ -45,26 +47,27 @@ function RightField(props) {
     return () => clearInterval(intervalId);
   }, [time, isQuerying]);
 
-  let adder = useCallback((obj) => adderFunctionMapper["bindings"](setResults)(obj), []);
-
-
   /**
    * starts the execution of a query and adjusts the UI respectively.
    */
   const startQueryExecution = useCallback(() => {
     setTime(0);
     if (selectedQuery) {
-      const eventEmitter = makeUIEventEmitter(setVariables, adder, setQuerying, setErrorMessage);
+      const eventEmitter = makeUIEventEmitter(
+        setVariables,
+        setResultType,
+        setQuerying,
+        setErrorMessage
+      );
       setErrorMessage(undefined);
       disableIterator();
       setResults([]);
       setVariables([]);
       iterator = undefined;
       setQuerying(true);
-      executeQuery(selectedQuery, eventEmitter);
+      executeQuery(selectedQuery, eventEmitter, setResults);
     }
   }, [selectedQuery, adder]);
-
 
   useEffect(() => {
     startQueryExecution();
@@ -108,11 +111,15 @@ function RightField(props) {
             </div>
           )}
         </div>
-        <SolidLoginForm defaultIDP={config.defaultIDP} onClick={disableIterator} />
+        <SolidLoginForm
+          defaultIDP={config.defaultIDP}
+          onClick={disableIterator}
+        />
       </div>
       {errorMessage && <label className="error-label">{errorMessage}</label>}
       {!errorMessage && (
         <ResultsTable
+          resultType={resultType}
           results={results}
           variables={variables}
           isQuerying={isQuerying}
@@ -132,11 +139,15 @@ function RightField(props) {
  */
 function makeUIEventEmitter(
   setVariables,
-  resultAdder,
+  setResultType,
   setQuerying,
   setErrorMessage
 ) {
   const eventEmitter = new EventEmitter();
+
+  eventEmitter.on("resultType", (type) => {
+    setResultType(type);
+  });
 
   // An error message
   eventEmitter.on("error", (error) => {
@@ -146,11 +157,6 @@ function makeUIEventEmitter(
   // The variables of the query
   eventEmitter.on("variables", (variables) => {
     setVariables(variables);
-  });
-
-  // A new result
-  eventEmitter.on("result", (result) => {
-    resultAdder(result);
   });
 
   // Whether there is currently being queried or not
@@ -164,6 +170,9 @@ function makeUIEventEmitter(
 const adderFunctionMapper = {
   bindings: (setter) => {
     return ({ item, variables }) => bindingStreamAdder(item, variables, setter);
+  },
+  boolean: (setter) => {
+    return (result) => setter(result);
   },
 };
 
@@ -201,10 +210,10 @@ function disableIterator() {
 }
 
 /**
- * Fetches the the query file from the given query and returns its text.  
+ * Fetches the the query file from the given query and returns its text.
  * @param {query} query the query which is to be executed
  * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
- * @returns the text from the file location provided by the query relative to query location defined in the config file.  
+ * @returns the text from the file location provided by the query relative to query location defined in the config file.
  */
 async function fetchQuery(query, eventEmitter) {
   try {
@@ -220,16 +229,19 @@ async function fetchQuery(query, eventEmitter) {
  * @param {query} query the query which is to be executed
  * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
  */
-async function executeQuery(query, eventEmitter) {
+async function executeQuery(query, eventEmitter, resultAdder) {
   try {
     query.queryText = await fetchQuery(query, eventEmitter);
-    const fetchFunction = getDefaultSession().info.isLoggedIn ? authFetch : fetch;
+    const fetchFunction = getDefaultSession().info.isLoggedIn
+      ? authFetch
+      : fetch;
     return handleQueryExecution(
       await myEngine.query(query.queryText, {
         sources: query.sources,
         fetch: fetchFunction,
       }),
-      eventEmitter
+      eventEmitter,
+      resultAdder
     );
   } catch (error) {
     handleQueryFail(error, eventEmitter);
@@ -242,22 +254,32 @@ async function executeQuery(query, eventEmitter) {
  * @param {QueryType} execution a query execution
  * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
  */
-async function handleQueryExecution(execution, eventEmitter) {
+async function handleQueryExecution(execution, eventEmitter, resultAdder) {
   try {
-    const metadata = await execution.metadata();
-    const variables = metadata.variables.map((val) => {
-      return val.value;
-    });
+    let variables;
+    const resultType = execution.resultType;
+    const adder = (obj) => adderFunctionMapper[resultType](resultAdder)(obj);
+    console.log(adderFunctionMapper[resultType](resultAdder));
+    eventEmitter.emit("resultType", execution.resultType);
 
-    eventEmitter.emit("variables", variables);
+    if (execution.resultType !== "boolean") {
+      const metadata = await execution.metadata();
+      variables = metadata.variables.map((val) => {
+        return val.value;
+      });
+
+      eventEmitter.emit("variables", variables);
+    }
 
     queryTypeHandlers[execution.resultType](
       await execution.execute(),
-      variables,
-      eventEmitter
+      eventEmitter,
+      adder,
+      variables
     );
   } catch (error) {
-    handleQueryExecutionFail(error, eventEmitter)
+    console.log(error.message);
+    handleQueryExecutionFail(error, eventEmitter);
   }
 }
 
@@ -271,9 +293,9 @@ const queryTypeHandlers = {
  * Configures how a boolean query gets processed.
  * @param {Boolean} result the result of a boolean query
  */
-function configureBool(result) {
-  postMessage({ type: "result", result: result });
-  postMessage({ type: "end", message: "blank" });
+function configureBool(result, eventEmitter, adder) {
+  eventEmitter.emit("queryingStatus", false);
+  adder(result);
 }
 
 /**
@@ -281,9 +303,9 @@ function configureBool(result) {
  * @param {List<String>} variables all the variables of the query behind the binding stream.
  * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
  */
-function configureIterator(variables, eventEmitter) {
+function configureIterator(variables, eventEmitter, adder) {
   iterator.on("data", (data) => {
-    eventEmitter.emit("result", { variables: variables, item: data });
+    adder({ item: data, variables: variables });
   });
 
   iterator.on("end", () => {
@@ -298,9 +320,9 @@ function configureIterator(variables, eventEmitter) {
  * @param {List<String>} variables all the variables of the query behind the binding stream.
  * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
  */
-function configureQuadStream(quadStream, variables, eventEmitter) {
+function configureQuadStream(quadStream, eventEmitter, adder, variables) {
   iterator = quadStream;
-  configureIterator(variables, eventEmitter);
+  configureIterator(variables, eventEmitter, adder);
 }
 
 /**
@@ -309,9 +331,9 @@ function configureQuadStream(quadStream, variables, eventEmitter) {
  * @param {List<String>} variables all the variables of the query behind the binding stream.
  * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
  */
-function configureBindingStream(bindingStream, variables, eventEmitter) {
+function configureBindingStream(bindingStream, eventEmitter, adder, variables) {
   iterator = bindingStream;
-  configureIterator(variables, eventEmitter);
+  configureIterator(variables, eventEmitter, adder);
 }
 
 /**
@@ -325,23 +347,23 @@ function handleQueryFetchFail(error, eventEmitter) {
 }
 
 /**
- * Handles the event whenever the Comunica query fails. 
- * @param {Error} error the object returned by Comunica engine when the query function fails.   
+ * Handles the event whenever the Comunica query fails.
+ * @param {Error} error the object returned by Comunica engine when the query function fails.
  * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
  */
 function handleQueryFail(error, eventEmitter) {
-  eventEmitter.emit("queryingStatus", false)
-  eventEmitter.emit("error", "Something went wrong while preparing the query.")
+  eventEmitter.emit("queryingStatus", false);
+  eventEmitter.emit("error", "Something went wrong while preparing the query.");
 }
 
 /**
- * Handles the event whenever the execution of the query fails. 
- * @param {Error} error the object returned by Comunica when the parsing of metadata or execution of the query fails. 
+ * Handles the event whenever the execution of the query fails.
+ * @param {Error} error the object returned by Comunica when the parsing of metadata or execution of the query fails.
  * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
  */
-function handleQueryExecutionFail(error, eventEmitter){
-  eventEmitter.emit("queryingStatus", false)
-  eventEmitter.emit("error", "Something went wrong while executing the query.")
+function handleQueryExecutionFail(error, eventEmitter) {
+  eventEmitter.emit("queryingStatus", false);
+  eventEmitter.emit("error", "Something went wrong while executing the query.");
 }
 
 export default RightField;
