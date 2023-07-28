@@ -38,7 +38,9 @@ The configuration file follows a simple structure.
             "name": "A name for the query",
             "description": "Description of the query",
             "id": "A unique ID for the query",
-            "sources": "Sources over which the query should be executed"
+            "sources": "Sources over which the query should be executed",
+            "trueText": "The text that is to be shown when the query result is true, only useful for ASK queries.",
+            "falseText": "The text that is to be shown when the query result is true, only useful for ASK queries."
         }
         ...
     ]
