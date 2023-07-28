@@ -23,6 +23,8 @@ header *{
 
 .app-title{
     margin-left: 0;
+    font-family: Garamond, serif;
+    font-size: 225%;
 }
 
 .app-body{
