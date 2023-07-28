@@ -22,9 +22,7 @@ if (config.queryFolder.substring(config.queryFolder.length - 1) !== "/") {
 }
 
 const myEngine = new QueryEngine();
-let adder;
 let iterator = undefined;
-let query 
 
 /**
  *
@@ -33,7 +31,6 @@ let query
  */
 function RightField(props) {
   const selectedQuery = props.query;
-  query = props.query
   const [results, setResults] = useState([]);
   const [resultType, setResultType] = useState(undefined);
   const [variables, setVariables] = useState([]);
@@ -67,7 +64,7 @@ function RightField(props) {
       setVariables([]);
       iterator = undefined;
       setQuerying(true);
-      executeQuery(eventEmitter, setResults);
+      executeQuery(selectedQuery, eventEmitter, setResults);
     }
   }, [selectedQuery]);
 
@@ -173,7 +170,7 @@ const adderFunctionMapper = {
   bindings: (setter) => {
     return ({ item, variables }) => bindingStreamAdder(item, variables, setter);
   },
-  boolean: (setter) => {
+  boolean: (setter, query) => {
     return (result) => result ? setter(query.trueText) : setter(query.falseText);
   },
 };
@@ -231,7 +228,7 @@ async function fetchQuery(query, eventEmitter) {
  * @param {query} query the query which is to be executed
  * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
  */
-async function executeQuery(eventEmitter, resultAdder) {
+async function executeQuery(query, eventEmitter, resultAdder) {
   try {
     query.queryText = await fetchQuery(query, eventEmitter);
     const fetchFunction = getDefaultSession().info.isLoggedIn
@@ -242,6 +239,7 @@ async function executeQuery(eventEmitter, resultAdder) {
         sources: query.sources,
         fetch: fetchFunction,
       }),
+      query,
       eventEmitter,
       resultAdder
     );
@@ -256,11 +254,11 @@ async function executeQuery(eventEmitter, resultAdder) {
  * @param {QueryType} execution a query execution
  * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
  */
-async function handleQueryExecution(execution, eventEmitter, resultAdder) {
+async function handleQueryExecution(execution, query, eventEmitter, resultAdder) {
   try {
     let variables;
     const resultType = execution.resultType;
-    const adder = (obj) => adderFunctionMapper[resultType](resultAdder)(obj);
+    const adder = (obj) => adderFunctionMapper[resultType](resultAdder, query)(obj);
 
     eventEmitter.emit("resultType", execution.resultType);
 
