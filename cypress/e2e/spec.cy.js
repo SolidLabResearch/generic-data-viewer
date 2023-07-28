@@ -18,4 +18,11 @@ describe('Web app', () => {
         cy.contains('A list of my favorite books').click()  
         cy.contains('"It Ends With Us"')      
     })
+
+    it("Query on private data unauthenticated", () => {
+        cy.visit('/')
+        
+        cy.contains('A list of my favorite books').click()
+        cy.contains('Something went wrong while preparing the query.')
+    })
 })
