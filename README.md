@@ -119,3 +119,33 @@ To create a local pod with which you can test for example authentication you can
   We already added a query to list books based on the resource `favourite-books` to `src/config.json`.
 - Log in with the IDP `http://localhost:8080` and 
   the credentials in the file `seeded-pod-config.json`. 
+
+
+## Testing 
+
+For testing we use [Cypress](https://www.cypress.io/) and [React-Jest](https://jestjs.io/docs/tutorial-react). 
+we use [Cypress](https://www.cypress.io/) for user stories and [React-Jest](https://jestjs.io/docs/tutorial-react) for UI requirements. 
+To run all the tests you can execute the following:
+
+1. Prepare and start the Community Solid Server with the available pods as explained in the [Testing with local pods section](#testing-with-local-pods). 
+    ```bash
+    npm run prepare:pods && npm run start:pods
+    ```
+   Keep the server running. 
+
+2. Start the Web application
+    ```bash
+    npm start
+    ```
+    Also keep this process running. 
+3. Finally, you can execute the tests by running
+    ```bash
+    npm test
+    ```
+
+Alternatively, you can run only the [React-Jest](https://jestjs.io/docs/tutorial-react) without running the Web application or the community server by executing 
+
+```bash
+npx react-scripts test --watchAll=false
+```
+

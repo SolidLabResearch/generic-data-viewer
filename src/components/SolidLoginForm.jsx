@@ -49,7 +49,7 @@ function SolidLoginForm(props) {
     return (
       <div className="login-form">
         <form onSubmit={handleLogin}>
-          <label id="idp-label" for="idp">IDP: </label>
+          <label id="idp-label" htmlFor="idp">IDP: </label>
           <input
             name="idp"
             type="text"
