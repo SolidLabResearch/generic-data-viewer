@@ -124,7 +124,7 @@ To create a local pod with which you can test for example authentication you can
 For testing we use [Cypress](https://www.cypress.io/) or [React-Jest](https://jestjs.io/docs/tutorial-react).
 To run all the tests you can execute the following:
 
-1. Prepare and start the community Solid server with the available pods as explained in the [Testing with local pods section](#testing-with-local-pods). 
+1. Prepare and start the Community Solid Server with the available pods as explained in the [Testing with local pods section](#testing-with-local-pods). 
     ```bash
     npm run prepare:pods && npm run start:pods
     ```
