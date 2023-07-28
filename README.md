@@ -121,7 +121,8 @@ To create a local pod with which you can test for example authentication you can
 
 ## Testing 
 
-For testing we use [Cypress](https://www.cypress.io/) or [React-Jest](https://jestjs.io/docs/tutorial-react).
+For testing we use [Cypress](https://www.cypress.io/) and [React-Jest](https://jestjs.io/docs/tutorial-react). 
+we use [Cypress](https://www.cypress.io/) for user stories and [React-Jest](https://jestjs.io/docs/tutorial-react) for UI requirements. 
 To run all the tests you can execute the following:
 
 1. Prepare and start the Community Solid Server with the available pods as explained in the [Testing with local pods section](#testing-with-local-pods). 
