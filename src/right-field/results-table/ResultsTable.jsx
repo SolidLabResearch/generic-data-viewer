@@ -16,6 +16,8 @@ function ResultsTable(props) {
   const variables = props.variables
   const containerRef = useRef()
 
+  console.log(  props.resultType)
+
   if (containerRef.current) {
     containerRef.current.wrapper.current.className = "grid-wrapper";
   }
@@ -23,7 +25,7 @@ function ResultsTable(props) {
   return (
     <div className="results-table">
       {!selectedQuery && <label data-testid="no-query-label">Please select a query.</label>}
-      {variables.length > 0 &&
+      {(variables.length > 0 && props.resultType === "bindings") &&
         <Grid style={{ th: { "height": "fit-content" }, container: { "margin": "0" }, table: {"overflow": "hidden"} }}
           className={{ tbody: "grid-body" }}
           data-testid="gridjs"
@@ -33,6 +35,8 @@ function ResultsTable(props) {
           ref={containerRef}
           columns={variables.map(column => { return generateColumn(column, variables.length, props.isQuerying) })} />
       }
+      {props.resultType === "boolean" && 
+        <span>{String(props.results)}</span>}
     </div>
   )
 }

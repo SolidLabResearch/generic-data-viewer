@@ -24,6 +24,7 @@ if (config.queryFolder.substring(config.queryFolder.length - 1) !== "/") {
 const myEngine = new QueryEngine();
 let adder;
 let iterator = undefined;
+let query 
 
 /**
  *
@@ -32,6 +33,7 @@ let iterator = undefined;
  */
 function RightField(props) {
   const selectedQuery = props.query;
+  query = props.query
   const [results, setResults] = useState([]);
   const [resultType, setResultType] = useState(undefined);
   const [variables, setVariables] = useState([]);
@@ -65,9 +67,9 @@ function RightField(props) {
       setVariables([]);
       iterator = undefined;
       setQuerying(true);
-      executeQuery(selectedQuery, eventEmitter, setResults);
+      executeQuery(eventEmitter, setResults);
     }
-  }, [selectedQuery, adder]);
+  }, [selectedQuery]);
 
   useEffect(() => {
     startQueryExecution();
@@ -172,7 +174,7 @@ const adderFunctionMapper = {
     return ({ item, variables }) => bindingStreamAdder(item, variables, setter);
   },
   boolean: (setter) => {
-    return (result) => setter(result);
+    return (result) => result ? setter(query.trueText) : setter(query.falseText);
   },
 };
 
@@ -229,7 +231,7 @@ async function fetchQuery(query, eventEmitter) {
  * @param {query} query the query which is to be executed
  * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
  */
-async function executeQuery(query, eventEmitter, resultAdder) {
+async function executeQuery(eventEmitter, resultAdder) {
   try {
     query.queryText = await fetchQuery(query, eventEmitter);
     const fetchFunction = getDefaultSession().info.isLoggedIn
@@ -259,7 +261,7 @@ async function handleQueryExecution(execution, eventEmitter, resultAdder) {
     let variables;
     const resultType = execution.resultType;
     const adder = (obj) => adderFunctionMapper[resultType](resultAdder)(obj);
-    console.log(adderFunctionMapper[resultType](resultAdder));
+
     eventEmitter.emit("resultType", execution.resultType);
 
     if (execution.resultType !== "boolean") {
