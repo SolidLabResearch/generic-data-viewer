@@ -1,7 +1,7 @@
 import { _ } from 'gridjs-react';
 
 export const typeRepresentationMapper = {
-  "img": (value) => _(<img alt="" src={value.value}></img>),
+  "img": (value) => _(<img src={value.value}></img>),
   "int": (value) => {return literalToNumber(value, parseInt) },
   "float": (value) => {return literalToNumber(value, parseFloat)},
   "euro": (value) => {return `€ ${getLiteralValue(value)}`},
