@@ -25,4 +25,11 @@ describe('Web app', () => {
         cy.contains('A list of my favorite books').click()
         cy.contains('Something went wrong while preparing the query.')
     })
+
+    it("Query public data", () => {
+        cy.visit('/')
+        
+        cy.contains('My wish list').click()
+        cy.contains('"Too Late"')
+    })
 })
