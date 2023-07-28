@@ -1,6 +1,6 @@
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX dbo: <http://dbpedia.org/ontology/>
-PREFIX dbp: <http://dbpedia.org/property/>
+PREFIX dbp: <http://dbpedia.org/resource/>
 ASK WHERE {
   ?person a dbo:Artist.
   ?person foaf:name ?name.
