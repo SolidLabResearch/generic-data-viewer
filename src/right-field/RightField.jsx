@@ -281,7 +281,6 @@ async function handleQueryExecution(execution, query, eventEmitter, resultAdder)
       variables
     );
   } catch (error) {
-    console.log(error.message);
     handleQueryExecutionFail(error, eventEmitter);
   }
 }

@@ -16,8 +16,6 @@ function ResultsTable(props) {
   const variables = props.variables
   const containerRef = useRef()
 
-  console.log(  props.resultType)
-
   if (containerRef.current) {
     containerRef.current.wrapper.current.className = "grid-wrapper";
   }
