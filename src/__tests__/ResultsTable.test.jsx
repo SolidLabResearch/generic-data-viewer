@@ -23,7 +23,7 @@ test('A query with variables exposes the gridjs table', () => {
     expect(gridJsTable).not.toBeUndefined()  
 })
 
-test('The GridJS table isn\'t present unless there are variables', () => {
+test(`The GridJS table isn't present unless there are variables`, () => {
     const {container} = render(<ResultsTable variables={[]} results={["testData"]} selectedQuery={{name: "Test query"}}></ResultsTable>)
     const gridJsTable = container.getElementsByClassName('gridjs').item(0)
     expect(gridJsTable).toBeNull()
