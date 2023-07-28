@@ -1,7 +1,7 @@
 import "./ResultsTable.css"
 
 import { useRef } from "react";
-import { Grid, _ } from 'gridjs-react';
+import { Grid } from 'gridjs-react';
 import "gridjs/dist/theme/mermaid.min.css";
 import { typeSortMapper } from '../../typeMapper.js'
 
@@ -24,7 +24,7 @@ function ResultsTable(props) {
     <div className="results-table">
       {!selectedQuery && <label data-testid="no-query-label">Please select a query.</label>}
       {variables.length > 0 &&
-        <Grid style={{ td: { "text-align": "center" }, th: { "text-align": "center", "height": "fit-content" }, container: { "margin": "0" }, table: {"overflow": "hidden"} }}
+        <Grid style={{ th: { "height": "fit-content" }, container: { "margin": "0" }, table: {"overflow": "hidden"} }}
           className={{ tbody: "grid-body" }}
           data-testid="gridjs"
           data={results}

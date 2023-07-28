@@ -54,7 +54,7 @@ function SolidLoginForm(props) {
             name="idp"
             type="text"
             placeholder="Identity Provider..."
-            defaultValue="https://pod.playground.solidlab.be/"
+            defaultValue={props.defaultIDP}
           />
           <input type="submit" value="Login" className="form-button" />
         </form>

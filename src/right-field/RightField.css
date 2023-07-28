@@ -24,8 +24,9 @@ button{
 
 #query-name-label{
     margin-right: 40px;
-    height: 100%;
-    font-size: calc(0.9vw + 0.9vh);
+    text-align: center;
+    justify-self: center;
+    align-self: center;
 }
 
 .form-button{
@@ -107,4 +108,13 @@ button{
 
 #idp-label{
     margin-right: 0;
+}
+
+.error-label{
+    color: red;
+    justify-self: center;
+    align-self: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
 }

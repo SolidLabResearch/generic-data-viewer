@@ -30,6 +30,7 @@ The configuration file follows a simple structure.
     "backgroundColor": "Background color of the app, can be any CSS color.",
     "footer": "HTML components or text that will function as the footer (will be placed in the footer div.)",
     "showMilliseconds", "True or false, whether the Runtime section should show milliseconds or not.",
+    "defaultIDP": "The default value used for IDP when logging in, this IDP can be manually changed in the Web app as well. ",
     "queryFolder": "The base location of the queries, all query locations will start from this folder (relative to public folder.)",
     "queries": [
         {
