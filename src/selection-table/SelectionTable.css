@@ -1,7 +1,6 @@
 
 
 .selection-table{
-    box-shadow: 3px 3px 3px 2px rgb(203, 203, 203);
     border-radius: 10px;
     display: inline;
     height: calc(100% - 40px);
