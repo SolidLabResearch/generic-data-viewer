@@ -17,6 +17,10 @@ function App() {
   const session = getDefaultSession()
   const [loggedIn, setLoggedIn] = useState()
   useEffect(() => {
+    const root = document.documentElement
+    root.style.setProperty('--text-color', config.textColor)
+  }, [])
+  useEffect(() => {
     session.onLogin(() => setLoggedIn(true))
     session.onLogout(() => setLoggedIn(false))
 
@@ -37,7 +41,7 @@ function App() {
     <div className="App" style={{backgroundColor: config.backgroundColor}}>
       <header>
         <a href={config.logoRedirectURL} target="_blank" rel="noreferrer"><img alt="Logo of the Web app" className="logo" src={config.logoLocation}></img></a>
-        <h1 className="app-title">{config.title}</h1>
+        <h1 className="app-title"  style={{color: config.titleColor}}>{config.title}</h1>
       </header>
       <div className="app-body">
         <SelectionTable onSelected={(query) => setSelectedQuery(query)} queries={config.queries}/>
