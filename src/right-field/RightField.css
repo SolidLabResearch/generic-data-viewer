@@ -115,12 +115,12 @@ input[type="submit"]:hover {
   justify-content: flex-end;
 }
 
-.login-form form {
-  margin: 0;
-  display: flex;
-  height: 100%;
-  align-items: center;
-  justify-content: end;
+.login-form form{
+    margin: 0;
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: flex-end;
 }
 
 #logged-in-label {
