@@ -1,6 +1,7 @@
 
 
 .selection-table{
+    border-radius: 10px;
     display: inline;
     height: calc(100% - 40px);
     width: 20%;
@@ -10,7 +11,7 @@
 #queries-title {
   display: flex;
   align-items: center;
-  height: 5%;
+  height: fit-content;
 }
 
 .selection-table-box {
@@ -46,11 +47,16 @@
 }
 
 .query-selector {
+  flex: 1;
+  text-align: start;
   width: fit-content;
   background-color: inherit;
   border: 0;
   font-size: medium;
   font-weight: bolder;
+  border: none;
+  box-shadow: none;
+  margin-right: 10px;
 }
 
 .query-entry .query-selector {
@@ -66,6 +72,10 @@
   padding: 0;
   float: right;
   margin-left: auto;
+}
+
+.arrow:hover{
+  cursor: pointer;
 }
 
 .arrow::before {
@@ -84,10 +94,6 @@
   transition: transform 0.25s;
 }
 
-.arrow:hover {
-  cursor: pointer;
-}
-
 .extended-content {
-  margin-left: 4%;
+  margin-left: 8%;
 }

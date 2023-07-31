@@ -3,6 +3,8 @@
     "logoLocation": "images/IDLab-logo.jpg",
     "mainAppColor": "lightgray", 
     "backgroundColor": "#fff",
+    "titleColor": "black",
+    "textColor": "black",
     "queryFolder": "queries",
     "showMilliseconds": false, 
     "defaultIDP": "https://pod.playground.solidlab.be/",
