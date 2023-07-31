@@ -36,7 +36,7 @@ function App() {
   return (
     <div className="App" style={{backgroundColor: config.backgroundColor}}>
       <header>
-        <img alt="Logo of the Web app" className="logo" src={config.logoLocation}></img>
+        <a href={config.logoRedirectURL} target="_blank" rel="noreferrer"><img alt="Logo of the Web app" className="logo" src={config.logoLocation}></img></a>
         <h1 className="app-title">{config.title}</h1>
       </header>
       <div className="app-body">
