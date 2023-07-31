@@ -1,12 +1,22 @@
+
+:root {
+    --text-color: black;
+    --title-color: black; 
+}
+
+
 .App{
     width: 100%;
-    height: 100%;
+    height: calc(100% - 40px);
+    align-self: center;
+    justify-self: center;
 }
 
 header{
     height: 10%;
     display: flex;
     align-items: center;
+    margin-bottom: 20px;
 }
 
 header *{
@@ -23,11 +33,13 @@ header *{
 
 .app-title{
     margin-left: 0;
+    font-size: 225%;
 }
 
 .app-body{
+    color: var(--text-color);
     width: 100%;
-    height: 85%;
+    height: calc(85%);
     align-items: center;
     justify-content: center;
     display: flex;
@@ -43,4 +55,5 @@ footer{
     height: 5%;
     align-content: center;
     text-align: center;
+    color: inherit;
 }

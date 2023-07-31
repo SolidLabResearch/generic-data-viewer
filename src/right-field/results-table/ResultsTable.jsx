@@ -21,7 +21,7 @@ function ResultsTable(props) {
   }
 
   return (
-    <div className="results-table">
+    <div className="results-table" style={{marginTop: 0}}>
       {!selectedQuery && <label data-testid="no-query-label">Please select a query.</label>}
       {variables.length > 0 &&
         <Grid style={{ th: { "height": "fit-content" }, container: { "margin": "0" }, table: {"overflow": "hidden"} }}
