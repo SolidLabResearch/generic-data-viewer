@@ -181,6 +181,11 @@ const adderFunctionMapper = {
   }
 };
 
+/**
+ * Processes a result entry as it should look in the result table, and adds it to the table entries
+ * @param {Object} item The result entry that should be processed 
+ * @param {Function} setter function to set the table entries. 
+ */
 function quadStreamAdder(item, setter) {
   const newValues = [item.subject.value, item.predicate.value, item.object.value, item.graph.value];
   setter((old) => {
