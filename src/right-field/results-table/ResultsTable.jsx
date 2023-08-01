@@ -30,6 +30,7 @@ function ResultsTable(props) {
           data={results}
           sort={true}
           autoWidth={!props.isQuerying}
+          resizable={!props.isQuerying}
           ref={containerRef}
           columns={variables.map(column => { return generateColumn(column, variables.length, props.isQuerying) })} />
       }
@@ -42,15 +43,21 @@ function ResultsTable(props) {
 /**
  * Given a variable name and total amount of variables generates a configuration object as defined by GridJS https://gridjs.io/docs/config/columns 
  * @param {String} variable a variable name 
+ * @param {Number} size the total amount of variables
+ * @param {Boolean} isQuerying whether the query is still being executed or not
  * @returns {Object} a configuration object corresponding to a column, following GridJS config. 
  */
-function generateColumn(variable) {
+function generateColumn(variable, size, isQuerying) {
   let variableSplitted = variable.split('_')
   let config = {
     name: variableSplitted[0],
+    minWidth: "1px" ,
     sort: {
       compare: typeSortMapper[variableSplitted[1]]
     }
+  }
+  if(!isQuerying) {
+    config.width = `${100 / size}%`
   }
   return config
 }

@@ -27,11 +27,14 @@
 .gridjs-td *{
     padding: 0;
     margin: 0;
-    max-width: 100%;
 }
 
 .grid-wrapper{
     margin-top: 0;
+}
+
+.gridjs-resizable{
+    margin: 0;
 }
 
 .center-label{
