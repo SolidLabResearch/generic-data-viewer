@@ -41,6 +41,8 @@ function ResultsTable(props) {
 /**
  * Given a variable name and total amount of variables generates a configuration object as defined by GridJS https://gridjs.io/docs/config/columns 
  * @param {String} variable a variable name 
+ * @param {Number} size the total amount of variables
+ * @param {Boolean} isQuerying whether the query is still being executed or not
  * @returns {Object} a configuration object corresponding to a column, following GridJS config. 
  */
 function generateColumn(variable, size, isQuerying) {
