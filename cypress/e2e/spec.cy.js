@@ -40,4 +40,12 @@ describe('Web app', () => {
         cy.contains('Finished in:')
         cy.contains('There is an artist who is inspired by Picasso!')
     })
+
+    it("Querying variable ending on _img should return an image as result", () => {
+        cy.visit('/')
+        
+        cy.contains('A Test For Images').click()
+        cy.contains('Finished in:')
+        cy.get('.gridjs').find('img')
+    })
 })
