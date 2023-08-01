@@ -1,6 +1,7 @@
 {
     "title": "Generic Data Viewer",
     "logoLocation": "images/IDLab-logo.jpg",
+    "logoRedirectURL": "https://idlab.technology/",
     "mainAppColor": "lightgray", 
     "backgroundColor": "#fff",
     "titleColor": "black",

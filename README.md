@@ -26,6 +26,7 @@ The configuration file follows a simple structure.
 {
     "title": "Title shown at the top of the app.",
     "logoLocation": "Image location of the logo shown at the top of the app (relative to public folder.).",
+    "logoRedirectURL": "The URL the Web application redirects to when a user clicks on the logo.",
     "mainAppColor": "The main colors used in the app, can be any CSS color.",
     "backgroundColor": "Background color of the app, can be any CSS color.",
     "titleColor": "The color of the title, can be any CSS color",
