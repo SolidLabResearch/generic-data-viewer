@@ -21,10 +21,10 @@ function ResultsTable(props) {
   }
 
   return (
-    <div className="results-table" style={{marginTop: 0}}>
-      {!selectedQuery && <label data-testid="no-query-label">Please select a query.</label>}
-      {variables.length > 0 &&
-        <Grid style={{ th: { "height": "fit-content" }, container: { "margin": "0"}, table: {"overflow": "hidden"} }}
+    <div className="results-table">
+      {!selectedQuery && <label data-testid="no-query-label" className="center-label">Please select a query.</label>}
+      {(variables.length > 0 && props.resultType === "bindings") &&
+        <Grid style={{ th: { "height": "fit-content" }, container: { "margin": "0" }, table: {"overflow": "hidden"} }}
           className={{ tbody: "grid-body" }}
           data-testid="gridjs"
           data={results}
@@ -34,6 +34,8 @@ function ResultsTable(props) {
           ref={containerRef}
           columns={variables.map(column => { return generateColumn(column, variables.length, props.isQuerying) })} />
       }
+      {props.resultType === "boolean" && 
+        <span className="center-label">{String(props.results)}</span>}
     </div>
   )
 }
