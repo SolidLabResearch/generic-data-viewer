@@ -23,7 +23,7 @@ function ResultsTable(props) {
   return (
     <div className="results-table">
       {!selectedQuery && <label data-testid="no-query-label" className="center-label">Please select a query.</label>}
-      {(variables.length > 0 && props.resultType === "bindings") &&
+      {(variables.length > 0 && props.resultType !== "boolean") &&
         <Grid style={{ th: { "height": "fit-content" }, container: { "margin": "0" }, table: {"overflow": "hidden"} }}
           className={{ tbody: "grid-body" }}
           data-testid="gridjs"
