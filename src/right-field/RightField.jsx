@@ -228,7 +228,7 @@ async function fetchQuery(query, eventEmitter) {
  * A function that executes a given query and processes every result as a stream based on the EventEmitter.
  * @param {query} query the query which is to be executed
  * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
- * @param {Function} adder function that sets UI state of the query result
+ * @param {Function} resultAdder function that sets UI state of the query result
  */
 async function executeQuery(query, eventEmitter, resultAdder) {
   try {
