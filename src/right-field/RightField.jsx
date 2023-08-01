@@ -171,7 +171,8 @@ const adderFunctionMapper = {
     return ({ item, variables }) => bindingStreamAdder(item, variables, setter);
   },
   boolean: (setter, query) => {
-    return (result) => result ? setter(query.trueText) : setter(query.falseText);
+    let resultObject = query.askQuery;
+    return (result) => result ? setter(resultObject.trueText) : setter(resultObject.falseText);
   },
 };
 

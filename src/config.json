@@ -38,8 +38,10 @@
             "description": "Whether or not there is an artist who is influenced by Picasso",
             "id": "987",
             "sources": ["https://fragments.dbpedia.org/2016-04/en"],
-            "trueText": "There is an artist who is inspired by Picasso!",
-            "falseText": "There is no artist who is inspired by Picasso."
+            "askQuery": {
+                "trueText": "There is an artist who is inspired by Picasso!",
+                "falseText": "There is no artist who is inspired by Picasso."
+            }
         },
         {
             "queryLocation": "books.ttl",

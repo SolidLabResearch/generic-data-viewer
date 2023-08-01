@@ -1,13 +1,13 @@
 # generic-data-viewer
+
 Generic query-based data viewer
 
-
-## Getting Started 
+## Getting Started
 
 After installing, the following steps suffice to install the application:
 
 ```bash
-npm install 
+npm install
 ```
 
 after this you can execute
@@ -20,7 +20,7 @@ Which will start the web application
 
 ### Configuration file
 
-The configuration file follows a simple structure. 
+The configuration file follows a simple structure.
 
 ```js
 {
@@ -42,8 +42,11 @@ The configuration file follows a simple structure.
             "description": "Description of the query",
             "id": "A unique ID for the query",
             "sources": "Sources over which the query should be executed",
-            "trueText": "The text that is to be shown when the query result is true, only useful for ASK queries.",
-            "falseText": "The text that is to be shown when the query result is true, only useful for ASK queries."
+            "askQuery": {
+                "trueText": "The text that is to be shown when the query result is true, only useful for ASK queries.",
+                "falseText": "The text that is to be shown when the query result is true, only useful for ASK queries."
+            }
+
         }
         ...
     ]
@@ -55,100 +58,100 @@ The configuration file follows a simple structure.
 When executing a query, it gives us either a URL, a literal value or [a blank node](https://www.w3.org/TR/rdf12-concepts/#section-blank-nodes).
 These URLs could reference to anything e.g. a picture, spreadsheet, resume, and so on.
 Also literals can be lots of things e.g. a float, integer, string, birthdate, price, and so on.
-By clarifying what the expected type is of the query result corresponding to a given variable 
-we can fully interpret how we can display and represent the result. 
+By clarifying what the expected type is of the query result corresponding to a given variable
+we can fully interpret how we can display and represent the result.
 
 You can specify the type of a variable by extending its name with the type in the query as such: `variableName_variableType`.
-The underscore `_` here is crucial to make a clear distinction between name and type. 
+The underscore `_` here is crucial to make a clear distinction between name and type.
 
-### Representation Mapper 
+### Representation Mapper
 
-If you want to add your own type representations 
-you can do this by adding your representation to the [typeMapper.js](./src/typeMapper.js) file. 
+If you want to add your own type representations
+you can do this by adding your representation to the [typeMapper.js](./src/typeMapper.js) file.
 This can be useful for example when querying images.
 The result of the query is a reference to the image.
-By mapping a representation we can show the actual image instead of the reference. 
+By mapping a representation we can show the actual image instead of the reference.
 
 The mapper follows a structure:
 
 ```js
 {
     "typeName": mapperFunction,
-    ... 
+    ...
 }
 ```
 
 With `typeName` being the name of the variable as defined in the `query`
-which is defined in [the configuration file](#configuration-file). 
-The function `mapperFunction` takes the query result for the corresponding variable and 
+which is defined in [the configuration file](#configuration-file).
+The function `mapperFunction` takes the query result for the corresponding variable and
 returns either a string or a [React](https://react.dev/) component (see below).
-Examples of how you can do this can already be found in that same [file](./src/typeMapper.js). 
+Examples of how you can do this can already be found in that same [file](./src/typeMapper.js).
 
 The web application uses [gridjs-react](https://gridjs.io/docs/integrations/react) internally.
-This allows us to add [html](https://nl.wikipedia.org/wiki/HyperText_Markup_Language) or 
+This allows us to add [html](https://nl.wikipedia.org/wiki/HyperText_Markup_Language) or
 [React](https://react.dev/) components as representations of the variable.
-To do this you need to import `_` function from [gridjs-react module](https://www.npmjs.com/package/gridjs-react) and 
+To do this you need to import `_` function from [gridjs-react module](https://www.npmjs.com/package/gridjs-react) and
 call it with the component as its variable.
 An example for this is also already provided in the [typeMapper.js](./src/typeMapper.js).
 
 ### Sort Mapper
 
 To support the sorting of the table you can also define sorting comparators for [variable types](#adding-variable-type).
-This can be done in the [typeMapper.js](./src/typeMapper.js) file. 
+This can be done in the [typeMapper.js](./src/typeMapper.js) file.
 
-The `typeSortMapper` object follows the following structure: 
+The `typeSortMapper` object follows the following structure:
 
 ```js
 {
     "typeName": sortFunction,
-    ... 
+    ...
 }
 ```
 
-With `typeName` being the name of the variable as defined in the query and 
+With `typeName` being the name of the variable as defined in the query and
 the sortFunction a comparator that takes 2 values of type `typeName`.
-If a type has no comparator defined it gets sorted as a string. 
+If a type has no comparator defined it gets sorted as a string.
 
-## Testing with local pods 
+## Testing with local pods
 
-To create a local pod with which you can test for example authentication you can follow the following steps: 
+To create a local pod with which you can test for example authentication you can follow the following steps:
 
-- Add your data and `.acl` files in the `initial-pod-data` folder. 
+- Add your data and `.acl` files in the `initial-pod-data` folder.
   These files will be available in the pod relative to `http://localhost:8080/example/`.
   We already added files for the resource `favourite-books`.
-- Prepare the pods by executing `npm run prepare:pods`. 
+- Prepare the pods by executing `npm run prepare:pods`.
 - Start the pods by executing `npm run start:pods`.
 - Add your query as described in [the configuration file section](#configuration-file).
   We already added a query to list books based on the resource `favourite-books` to `src/config.json`.
-- Log in with the IDP `http://localhost:8080` and 
-  the credentials in the file `seeded-pod-config.json`. 
+- Log in with the IDP `http://localhost:8080` and
+  the credentials in the file `seeded-pod-config.json`.
 
+## Testing
 
-## Testing 
-
-For testing we use [Cypress](https://www.cypress.io/) and [React-Jest](https://jestjs.io/docs/tutorial-react). 
-we use [Cypress](https://www.cypress.io/) for user stories and [React-Jest](https://jestjs.io/docs/tutorial-react) for UI requirements. 
+For testing we use [Cypress](https://www.cypress.io/) and [React-Jest](https://jestjs.io/docs/tutorial-react).
+we use [Cypress](https://www.cypress.io/) for user stories and [React-Jest](https://jestjs.io/docs/tutorial-react) for UI requirements.
 To run all the tests you can execute the following:
 
-1. Prepare and start the Community Solid Server with the available pods as explained in the [Testing with local pods section](#testing-with-local-pods). 
-    ```bash
-    npm run prepare:pods && npm run start:pods
-    ```
-   Keep the server running. 
+1. Prepare and start the Community Solid Server with the available pods as explained in the [Testing with local pods section](#testing-with-local-pods).
+
+   ```bash
+   npm run prepare:pods && npm run start:pods
+   ```
+
+   Keep the server running.
 
 2. Start the Web application
-    ```bash
-    npm start
-    ```
-    Also keep this process running. 
+   ```bash
+   npm start
+   ```
+   Also keep this process running.
 3. Finally, you can execute the tests by running
-    ```bash
-    npm test
-    ```
+   ```bash
+   npm test
+   ```
 
-Alternatively, you can run only the [React-Jest](https://jestjs.io/docs/tutorial-react) without running the Web application or the community server by executing 
+Alternatively, you can run only the [React-Jest](https://jestjs.io/docs/tutorial-react) without running the Web application or the community server by executing
 
 ```bash
 npx react-scripts test --watchAll=false
 ```
-
