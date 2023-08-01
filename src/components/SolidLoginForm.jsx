@@ -1,38 +1,63 @@
 import { getDefaultSession, fetch } from "@inrupt/solid-client-authn-browser";
-import { getLiteral, getProfileAll, getThing } from "@inrupt/solid-client";
+import {
+  getLiteral,
+  getProfileAll,
+  getThing,
+} from "@inrupt/solid-client";
 import { FOAF } from "@inrupt/vocab-common-rdf";
 import { useState } from "react";
+import { QueryEngine } from "@comunica/query-sparql";
 
 function SolidLoginForm(props) {
   const session = getDefaultSession();
   let webId = session.info.webId;
   const [name, setName] = useState(undefined);
+  const [errorMessage, setErrorMessage] = useState(undefined);
+
   if (webId) {
-    getProfileAll(webId, { fetch: fetch }).then((dataSet) => {
-      let profile = dataSet.webIdProfile;
-      const webIdThing = getThing(profile, webId);
-      let literalName = getLiteral(webIdThing, FOAF.name);
-      if (literalName) {
-        setName(literalName.value);
-      } else {
-        setName(webId);
-      }
-    }).catch(_ => setName(webId));
+    getProfileAll(webId, { fetch: fetch })
+      .then((dataSet) => {
+        let profile = dataSet.webIdProfile;
+        const webIdThing = getThing(profile, webId);
+        let literalName = getLiteral(webIdThing, FOAF.name);
+        if (literalName) {
+          setName(literalName.value);
+        } else {
+          setName(webId);
+        }
+      })
+      .catch((_) => setName(webId));
   }
 
   /**
    * Handling what should happen when the user trying to log in.
    * @param {Event} event the event calling the EventListener
    */
-  function handleLogin(event) {
+  async function handleLogin(event) {
     event.preventDefault();
+    setErrorMessage(undefined)
     props.onClick();
     let idp = event.target[0].value;
-    session.login({
-      oidcIssuer: idp,
-      redirectUrl: new URL("/", window.location.href).toString(),
-      clientName: "Generic Data Viewer",
-    });
+    try {
+      idp = await queryIDPfromWebId(idp);
+      console.log(
+        idp
+      );
+    } catch (error) {
+      // Nothing to do here, the IDP is already set
+    }
+
+    try{
+      await session.login({
+        oidcIssuer: idp,
+        redirectUrl: new URL("/", window.location.href).toString(),
+        clientName: "Generic Data Viewer",
+      });
+    }
+    catch(error){
+      setErrorMessage("Something went wrong logging in. Please try again.")
+    }
+    
   }
 
   /**
@@ -49,16 +74,19 @@ function SolidLoginForm(props) {
     return (
       <div className="login-form">
         <form onSubmit={handleLogin}>
-          <label id="idp-label" htmlFor="idp">Identity Provider:</label>
+          <label id="idp-label" htmlFor="idp">
+            Identity Provider/WebID:
+          </label>
           <input
             name="idp"
             type="text"
             id="idp"
-            placeholder="Identity Provider..."
+            placeholder="Identity Provider or WebID..."
             defaultValue={props.defaultIDP}
           />
           <input type="submit" value="Login" className="form-button" />
         </form>
+        <label className="errorLabel">{errorMessage}</label>
       </div>
     );
   } else {
@@ -74,6 +102,24 @@ function SolidLoginForm(props) {
       </div>
     );
   }
+}
+
+/**
+ * Looks up the IDP of a webId by querying the webId. 
+ * @param {URL} webId the webId to query the IDP from
+ * @returns {Promise<URL>} the first IDP of the webId
+ */
+async function queryIDPfromWebId(webId) {
+  let queryEngine = new QueryEngine();
+  let bindings =await queryEngine.queryBindings(
+    `SELECT ?idp WHERE { <${webId}> <http://www.w3.org/ns/solid/terms#oidcIssuer> ?idp }`,
+    { sources: [webId] }
+  );
+  let firstIdp = (await bindings.toArray()) 
+  if(!firstIdp){
+    throw new Error("No IDP found")
+  }
+  return firstIdp[0].get("idp").value;
 }
 
 export default SolidLoginForm;
