@@ -32,4 +32,12 @@ describe('Web app', () => {
         cy.contains('My wish list').click()
         cy.contains('"Too Late"')
     })
+
+    it("Query public ASK query", () => {
+        cy.visit('/')
+        
+        cy.contains('Is there an artist influenced by Picasso?').click()
+        cy.contains('Finished in:')
+        cy.contains('There is an artist who is inspired by Picasso!')
+    })
 })
