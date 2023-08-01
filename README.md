@@ -26,8 +26,11 @@ The configuration file follows a simple structure.
 {
     "title": "Title shown at the top of the app.",
     "logoLocation": "Image location of the logo shown at the top of the app (relative to public folder.).",
+    "logoRedirectURL": "The URL the Web application redirects to when a user clicks on the logo.",
     "mainAppColor": "The main colors used in the app, can be any CSS color.",
     "backgroundColor": "Background color of the app, can be any CSS color.",
+    "titleColor": "The color of the title, can be any CSS color",
+    "textColor": "The color of all the text in teh app body, this means all text except header and footer.",
     "footer": "HTML components or text that will function as the footer (will be placed in the footer div.)",
     "showMilliseconds", "True or false, whether the Runtime section should show milliseconds or not.",
     "defaultIDP": "The default value used for IDP when logging in, this IDP can be manually changed in the Web app as well. ",

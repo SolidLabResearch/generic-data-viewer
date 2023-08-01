@@ -1,86 +1,118 @@
-.right-field{
-    box-sizing: border-box;
-    display: inline-block;
-    text-align: center;
-    width: calc(80% - 60px);
-    height: calc(100% - 40px);
+.right-field {
+  border-radius: 10px;
+  box-sizing: border-box;
+  display: inline-block;
+  text-align: center;
+  width: calc(80% - 60px);
+  height: calc(100% - 40px);
 }
 
-.control-section{
-    height: 5%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.control-section {
+  height: 10%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0;
 }
 
-button{
-    height: 50%;
-    width: 4%;
+input[type="text"]{
+  border-radius: 5px;
 }
 
-#refresh-button{
-    width: fit-content;
+input[type="text"]:focus{
+  outline: 1px solid #24292e;
 }
 
-#query-name-label{
-    margin-right: 40px;
-    text-align: center;
-    justify-self: center;
-    align-self: center;
+button,
+input[type="submit"] {
+  height: fit-content;
+  width: fit-content;
+  padding: 5px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  vertical-align: middle;
+  border: 1px solid;
+  border-radius: 6px;
+  color: var(--text-color);
+  background-color: #fff;
+  border-color: #1b1f2326;
+  box-shadow: rgba(27, 31, 35, 0.04) 0px 1px 0px 0px,
+    rgba(255, 255, 255, 0.25) 0px 1px 0px 0px inset;
+  transition: 0.2s cubic-bezier(0.3, 0, 0.5, 1);
+  transition-property: color, background-color, border-color;
 }
 
-.form-button{
-    width: fit-content;
-    margin: inherit 0
+button:hover,
+input[type="submit"]:hover {
+  background-color: #f3f4f6;
+  border-color: #1b1f2326;
+  transition-duration: 0.1s;
+  cursor: pointer;
 }
 
-.refresh-button-container{
-    flex: 1;
-    margin: 0;
-    height: 100%;
-    display: flex;
-    align-items: center;
+#refresh-button {
+  width: fit-content;
 }
 
-#query-information{
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: fit-content;
+#query-name-label {
+  margin-right: 40px;
+  text-align: center;
+  justify-self: center;
+  align-self: center;
 }
 
-
-.information-box{
-    overflow: hidden;
+.form-button {
+  width: fit-content;
+  margin: inherit 0;
 }
 
-.information-box label{
-    display: flex;
-    min-width: 150px;
-    justify-content: flex-start;
-    white-space: nowrap;
-    align-items: center;
+.refresh-button-container {
+  flex: 1;
+  margin: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
 }
 
-#query-information *{
-    margin-left: 0;
+#query-information {
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: fit-content;
 }
 
-.stopWatch{
-    margin-right: 0;
-    margin-left: 20px;
+.information-box {
+  overflow: hidden;
 }
 
-.login-form{
-    flex: 1;
-    display: flex;
-    margin: 0;
-    margin-left: auto;
-    height: 100%;
-    align-items: center;
-    justify-content: flex-end;
+.information-box label {
+  display: flex;
+  min-width: 150px;
+  justify-content: flex-start;
+  white-space: nowrap;
+  align-items: center;
+}
+
+#query-information * {
+  margin-left: 0;
+}
+
+.stopWatch {
+  margin-right: 0;
+  margin-left: 20px;
+}
+
+.login-form {
+  flex: 1;
+  display: flex;
+  margin: 0;
+  margin-left: auto;
+  height: 100%;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .login-form form{
@@ -88,33 +120,31 @@ button{
     display: flex;
     height: 100%;
     align-items: center;
-    justify-content: end;
+    justify-content: flex-end;
 }
 
-
-
-#logged-in-label{
-    display: flex;
-    margin: 0;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
+#logged-in-label {
+  display: flex;
+  margin: 0;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
 }
 
-#logged-in-label strong{
-    margin: 0;
-    margin-right: 5px;
+#logged-in-label strong {
+  margin: 0;
+  margin-right: 5px;
 }
 
-#idp-label{
-    margin-right: 0;
+#idp-label {
+  margin-right: 0;
 }
 
-.error-label{
-    color: red;
-    justify-self: center;
-    align-self: center;
-    position: absolute;
-    top: 50%;
-    left: 50%;
+.error-label {
+  color: red;
+  justify-self: center;
+  align-self: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
 }

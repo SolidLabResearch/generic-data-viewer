@@ -3,11 +3,21 @@
     display: flex;
     justify-content: center;
     margin: 0 inherit;
-    height: calc(95% - 60px);
+    height: calc(90% - 60px);
     width: calc(100% - 40px);
     overflow: scroll;
 
 }
+
+.results-table:focus{
+    outline: none;
+}
+
+.results-table label{
+    position: absolute;
+    top: 50%;
+}
+
 
 .gridjs-wrapper{
     margin-left: 0
@@ -18,6 +28,10 @@
     padding: 0;
     margin: 0;
     max-width: 100%;
+}
+
+.grid-wrapper{
+    margin-top: 0;
 }
 
 .center-label{

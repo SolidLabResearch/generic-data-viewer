@@ -49,10 +49,11 @@ function SolidLoginForm(props) {
     return (
       <div className="login-form">
         <form onSubmit={handleLogin}>
-          <label id="idp-label" htmlFor="idp">IDP: </label>
+          <label id="idp-label" htmlFor="idp">Identity Provider:</label>
           <input
             name="idp"
             type="text"
+            id="idp"
             placeholder="Identity Provider..."
             defaultValue={props.defaultIDP}
           />
