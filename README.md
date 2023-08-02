@@ -18,6 +18,17 @@ npm start
 
 Which will start the web application
 
+## Static build
+
+If you want a static build of the application execute
+
+```bash
+npm run build
+```
+
+This will create a static build in the `build` folder.
+
+
 ### Logging in 
 
 To log in you need to provide an Identity Provider or a WebID.
