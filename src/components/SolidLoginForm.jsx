@@ -71,7 +71,7 @@ function SolidLoginForm(props) {
 
   if (!session.info.isLoggedIn) {
     return (
-      <div >
+      <div className="authentication-box">
         <form className="login-form" onSubmit={handleLogin}>
           <label id="idp-label" htmlFor="idp">
             Identity Provider/WebID:
@@ -90,7 +90,7 @@ function SolidLoginForm(props) {
     );
   } else {
     return (
-      <div className="login-form">
+      <div className="authentication-box">
         <label id="logged-in-label">
           <strong>Logged in as: </strong>
           {name}
