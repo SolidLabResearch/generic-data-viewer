@@ -18,6 +18,12 @@ npm start
 
 Which will start the web application
 
+### Logging in 
+
+To log in you need to provide an Identity Provider or a WebID.
+The application will detect which one you use and redirect you to the login page of your Identity Provider.
+If you use your WebID, the first OIDC issuer on your WebID is used when there are multiple. 
+
 ### Configuration file
 
 The configuration file follows a simple structure.
