@@ -104,9 +104,9 @@ function SolidLoginForm(props) {
 }
 
 /**
- * Looks up the IDP of a webId by querying the webId.
- * @param {URL} webId the webId to query the IDP from
- * @returns {Promise<URL>} the first IDP of the webId
+ * Looks up the IDP of a WebID by querying the WebID .
+ * @param {URL} webId the WebID to query the IDP from
+ * @returns {Promise<URL>} the first IDP of the WebID
  */
 async function queryIDPfromWebId(webId) {
   let queryEngine = new QueryEngine();
