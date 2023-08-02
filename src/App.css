@@ -24,9 +24,16 @@ header *{
 }
 
 .logo{
-    max-width: 100%;
+    display: block;
     max-height: 100%;
-    margin: 0 20px;
+    max-width: 100%;
+    object-fit: cover;
+    margin: 0;
+}
+
+header a{
+    max-height: 100%;
+    max-width: 20%;
 }
 
 
