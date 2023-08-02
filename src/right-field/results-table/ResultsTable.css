@@ -36,3 +36,8 @@
 .gridjs-resizable{
     margin: 0;
 }
+
+.center-label{
+    position: absolute;
+    top: 50%;
+}
