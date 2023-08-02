@@ -33,7 +33,7 @@ function SolidLoginForm(props) {
   }, [webId]);
 
   /**
-   * Handling what should happen when the user trying to log in.
+   * Handling what should happen when the user is trying to log in by pressing the log in button.
    * @param {Event} event the event calling the EventListener
    */
   async function handleLogin(event) {
@@ -60,7 +60,7 @@ function SolidLoginForm(props) {
   }
 
   /**
-   * Handling what should happen whe the user logs out.
+   * Handling what should happen when the user logs out.
    * @param {Event} event the event calling the EventListener
    */
   function handleLogout(event) {
