@@ -80,7 +80,7 @@ function SolidLoginForm(props) {
             name="idp"
             type="text"
             id="idp"
-            placeholder="Identity Provider or WebID..."
+            placeholder="Identity Provider or WebID"
             defaultValue={props.defaultIDP}
           />
           <input type="submit" value="Login" className="form-button" />
