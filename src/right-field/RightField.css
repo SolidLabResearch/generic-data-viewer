@@ -107,20 +107,30 @@ input[type="submit"]:hover {
 }
 
 .login-form {
-  flex: 1;
   display: flex;
   flex-direction: row;
   margin: 0;
   margin-left: auto;
-  height: 100%;
   align-items: center;
-  justify-content: flex-end;
+  flex: 1;
+}
+
+.authentication-box{
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  margin: 0;
+  margin-left: auto;
+  height: 100%;
 }
 
 .errorLabel{
   margin: 0;
   margin-right: 20px;
   color: red;
+  justify-self: center;
+  align-self: flex-end;
+  width: fit-content;
 }
 
 .login-form form{
