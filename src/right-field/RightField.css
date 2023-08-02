@@ -108,12 +108,12 @@ input[type="submit"]:hover {
 .login-form {
   flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   margin: 0;
   margin-left: auto;
   height: 100%;
-  align-items: flex-end;
-  justify-content: center;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .errorLabel{
