@@ -3,9 +3,10 @@
 .selection-table{
     border-radius: 10px;
     display: inline;
-    height: calc(100% - 40px);
+    height: calc(100% - 20px);
     width: 20%;
     margin-right: 0;
+    margin-bottom: 0;
 }
 
 #queries-title {

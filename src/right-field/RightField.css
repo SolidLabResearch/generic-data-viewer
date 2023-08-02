@@ -4,7 +4,8 @@
   display: inline-block;
   text-align: center;
   width: calc(80% - 60px);
-  height: calc(100% - 40px);
+  height: calc(100% - 20px);
+  margin-bottom: 0;
 }
 
 .control-section {
