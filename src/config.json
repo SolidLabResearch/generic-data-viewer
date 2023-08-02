@@ -44,6 +44,13 @@
             }
         },
         {
+            "queryLocation": "construct_picasso.qr",
+            "name": "A Test For Quad Queries",
+            "description": "A test for quad queries",
+            "id": "987",
+            "sources": ["https://fragments.dbpedia.org/2015/en"]
+        },
+        {
             "queryLocation": "books.rq",
             "name": "A list of my favorite books",
             "description": "A short list of some of my favorite books, which I keep secret.",

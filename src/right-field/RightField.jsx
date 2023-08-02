@@ -174,7 +174,24 @@ const adderFunctionMapper = {
     let resultObject = query.askQuery;
     return (result) => result ? setter(resultObject.trueText) : setter(resultObject.falseText);
   },
+  quads: (setter) => {
+    return ({ item }) => {
+      quadStreamAdder(item, setter)
+    };
+  }
 };
+
+/**
+ * Processes a result entry as it should look in the result table, and adds it to the table entries
+ * @param {Object} item The result entry that should be processed 
+ * @param {Function} setter function to set the table entries. 
+ */
+function quadStreamAdder(item, setter) {
+  const newValues = [item.subject.value, item.predicate.value, item.object.value, item.graph.value];
+  setter((old) => {
+    return [...old, newValues];
+  });
+}
 
 /**
  * Processes a result entry as it should look in the result table, and adds it to the table entries
@@ -188,7 +205,7 @@ function bindingStreamAdder(item, variables, setter) {
     const value = item.get(variable) ? item.get(variable) : "";
     const type = variable.split("_")[1];
     let componentCaller = typeRepresentationMapper[type];
-    componentCaller = componentCaller ? componentCaller : (text) => text.id;
+    componentCaller = componentCaller ? componentCaller : (text) => text.id ? text.id : text.value;
     newValues.push(componentCaller(value));
   }
 
@@ -272,7 +289,6 @@ async function handleQueryExecution(execution, query, eventEmitter, resultAdder)
         return val.value;
       });
 
-      eventEmitter.emit("variables", variables);
     }
 
     queryTypeHandlers[execution.resultType](
@@ -329,6 +345,7 @@ function configureIterator(variables, eventEmitter, adder) {
  */
 function configureQuadStream(quadStream, eventEmitter, adder, variables) {
   iterator = quadStream;
+  eventEmitter.emit("variables", ["subject", "predicate", "object", "graph"]);
   configureIterator(variables, eventEmitter, adder);
 }
 
@@ -341,6 +358,7 @@ function configureQuadStream(quadStream, eventEmitter, adder, variables) {
  */
 function configureBindingStream(bindingStream, eventEmitter, adder, variables) {
   iterator = bindingStream;
+  eventEmitter.emit("variables", variables);
   configureIterator(variables, eventEmitter, adder);
 }
 
