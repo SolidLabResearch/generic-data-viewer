@@ -18,6 +18,26 @@ npm start
 
 Which will start the web application
 
+## Static build
+
+If you want a static build of the application you can execute
+
+```bash
+npm run build
+```
+
+This will create a static build in the `build` folder.
+To serve this build you can use [serve](https://www.npmjs.com/package/serve) by executing
+
+```bash
+npm install -g serve
+serve -s build
+```
+
+Which will either host the website on port 3000 or pick a random port if 3000 is already in use.
+If you want to specify a port you can use the `-l` flag proceeded by the port number of your choice. 
+
+
 ### Logging in 
 
 To log in you need to provide an Identity Provider or a WebID.
