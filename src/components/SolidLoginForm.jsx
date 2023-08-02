@@ -1,11 +1,7 @@
 import { getDefaultSession, fetch } from "@inrupt/solid-client-authn-browser";
-import {
-  getLiteral,
-  getProfileAll,
-  getThing,
-} from "@inrupt/solid-client";
+import { getLiteral, getProfileAll, getThing } from "@inrupt/solid-client";
 import { FOAF } from "@inrupt/vocab-common-rdf";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { QueryEngine } from "@comunica/query-sparql";
 
 function SolidLoginForm(props) {
@@ -14,20 +10,27 @@ function SolidLoginForm(props) {
   const [name, setName] = useState(undefined);
   const [errorMessage, setErrorMessage] = useState(undefined);
 
-  if (webId) {
-    getProfileAll(webId, { fetch: fetch })
-      .then((dataSet) => {
-        let profile = dataSet.webIdProfile;
-        const webIdThing = getThing(profile, webId);
-        let literalName = getLiteral(webIdThing, FOAF.name);
-        if (literalName) {
-          setName(literalName.value);
-        } else {
+  useEffect(() => {
+    let getName = async () => {
+      if (webId) {
+        try {
+          let dataSet = await getProfileAll(webId, { fetch: fetch });
+          let profile = dataSet.webIdProfile;
+          const webIdThing = getThing(profile, webId);
+          let literalName = getLiteral(webIdThing, FOAF.name);
+          if (literalName) {
+            setName(literalName.value);
+          } else {
+            setName(webId);
+          }
+        } catch {
           setName(webId);
         }
-      })
-      .catch((_) => setName(webId));
-  }
+      }
+    };
+
+    getName();
+  }, [webId]);
 
   /**
    * Handling what should happen when the user trying to log in.
@@ -35,29 +38,25 @@ function SolidLoginForm(props) {
    */
   async function handleLogin(event) {
     event.preventDefault();
-    setErrorMessage(undefined)
+    setErrorMessage(undefined);
     props.onClick();
     let idp = event.target[0].value;
     try {
       idp = await queryIDPfromWebId(idp);
-      console.log(
-        idp
-      );
+      console.log(idp);
     } catch (error) {
       // Nothing to do here, the IDP is already set
     }
 
-    try{
+    try {
       await session.login({
         oidcIssuer: idp,
         redirectUrl: new URL("/", window.location.href).toString(),
         clientName: "Generic Data Viewer",
       });
+    } catch (error) {
+      setErrorMessage("Something went wrong logging in. Please try again.");
     }
-    catch(error){
-      setErrorMessage("Something went wrong logging in. Please try again.")
-    }
-    
   }
 
   /**
@@ -105,19 +104,19 @@ function SolidLoginForm(props) {
 }
 
 /**
- * Looks up the IDP of a webId by querying the webId. 
+ * Looks up the IDP of a webId by querying the webId.
  * @param {URL} webId the webId to query the IDP from
  * @returns {Promise<URL>} the first IDP of the webId
  */
 async function queryIDPfromWebId(webId) {
   let queryEngine = new QueryEngine();
-  let bindings =await queryEngine.queryBindings(
+  let bindings = await queryEngine.queryBindings(
     `SELECT ?idp WHERE { <${webId}> <http://www.w3.org/ns/solid/terms#oidcIssuer> ?idp }`,
     { sources: [webId] }
   );
-  let firstIdp = (await bindings.toArray()) 
-  if(!firstIdp){
-    throw new Error("No IDP found")
+  let firstIdp = await bindings.toArray();
+  if (!firstIdp) {
+    throw new Error("No IDP found");
   }
   return firstIdp[0].get("idp").value;
 }
