@@ -32,4 +32,20 @@ describe('Web app', () => {
         cy.contains('My wish list').click()
         cy.contains('"Too Late"')
     })
+
+    it("Query public ASK query", () => {
+        cy.visit('/')
+        
+        cy.contains('Is there an artist influenced by Picasso?').click()
+        cy.contains('Finished in:')
+        cy.contains('There is an artist who is inspired by Picasso!')
+    })
+
+    it("Querying variable ending on _img should return an image as result", () => {
+        cy.visit('/')
+        
+        cy.contains('A Test For Images').click()
+        cy.contains('Finished in:')
+        cy.get('.gridjs').find('img')
+    })
 })
