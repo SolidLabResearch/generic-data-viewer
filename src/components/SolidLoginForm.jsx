@@ -90,7 +90,7 @@ function SolidLoginForm(props) {
     );
   } else {
     return (
-      <div className="authentication-box">
+      <div className="login-form">
         <label id="logged-in-label">
           <strong>Logged in as: </strong>
           {name}
