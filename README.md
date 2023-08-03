@@ -1,6 +1,8 @@
-# generic-data-viewer
+# Generic Data Viewer
 
-Generic query-based data viewer
+This Web app allows users to easily execute queries over multiple data sources (including Solid pods) and 
+inspect the corresponding results.
+You find a screencast of the app [here](https://cloud.ilabt.imec.be/index.php/s/AJomCGpLjYbxmCX).
 
 ## Getting Started
 
