@@ -4,6 +4,8 @@ Generic query-based data viewer
 
 ## Getting Started
 
+A tutorial on how to use the application can be found [here](https://cloud.ilabt.imec.be/index.php/s/AJomCGpLjYbxmCX). 
+
 After installing, the following steps suffice to install the application:
 
 ```bash
