@@ -14,7 +14,7 @@ export default {
     maxAssetSize: 512000,
   },
   output: {
-    path: path.resolve(__dirname, "public"),
+    path: path.resolve(__dirname, "build"),
 
     filename: "main.js",
   },

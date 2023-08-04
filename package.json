@@ -22,7 +22,7 @@
     "start:pods": "npx @solid/community-server -c @css:config/file-no-setup.json -f pods -p 8080",
     "reset:pods": "npx rimraf pods && npm run prepare:pods",
     "start": "webpack-dev-server --config webpack.dev.config.js",
-    "build": "webpack .",
+    "build": "webpack",
     "test": "cypress run && react-scripts test --watchAll=false"
   },
   "eslintConfig": {
