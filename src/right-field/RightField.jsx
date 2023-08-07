@@ -5,10 +5,7 @@ import { typeRepresentationMapper } from "../typeMapper.js";
 import config from "../config.json";
 import Time from "../components/Time";
 import SolidLoginForm from "../components/SolidLoginForm";
-import {
-  fetch as authFetch,
-  getDefaultSession,
-} from "@inrupt/solid-client-authn-browser";
+import { fetch as authFetch } from "@inrupt/solid-client-authn-browser";
 import { QueryEngine } from "@comunica/query-sparql";
 
 const EventEmitter = require("events");
@@ -281,10 +278,7 @@ async function authenticationFetch(argument) {
   let resultFetch;
   try {
     resultFetch = await fetch(argument);
-    if (
-      (resultFetch.status === 401 || resultFetch.status === 403) &&
-      getDefaultSession().info.isLoggedIn
-    ) {
+    if (resultFetch.status === 401 || resultFetch.status === 403) {
       resultFetch = await authFetch(argument);
     }
   } catch (error) {
