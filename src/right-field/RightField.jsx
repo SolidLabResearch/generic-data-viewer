@@ -10,6 +10,7 @@ import {
   getDefaultSession,
 } from "@inrupt/solid-client-authn-browser";
 import { QueryEngine } from "@comunica/query-sparql";
+import { ProxyHandlerStatic } from "@comunica/actor-http-proxy";
 
 const EventEmitter = require("events");
 
@@ -22,6 +23,10 @@ if (config.queryFolder.substring(config.queryFolder.length - 1) !== "/") {
 }
 
 const myEngine = new QueryEngine();
+let proxyHandler = undefined;
+if(config.httpProxy){
+  proxyHandler = new ProxyHandlerStatic(config.httpProxy);
+}
 let iterator = undefined;
 
 /**
@@ -257,6 +262,7 @@ async function executeQuery(query, eventEmitter, resultAdder) {
       await myEngine.query(query.queryText, {
         sources: query.sources,
         fetch: fetchFunction,
+        httpProxyHandler: proxyHandler,
       }),
       query,
       eventEmitter,

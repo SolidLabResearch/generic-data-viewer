@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@comunica/actor-http-proxy": "^2.8.1",
     "@comunica/query-sparql": "^2.6.9",
-    "@solid/community-server": "^6.0.1",
     "@inrupt/solid-client": "^1.29.0",
     "@inrupt/solid-client-authn-browser": "^1.17.1",
     "@inrupt/vocab-common-rdf": "^1.0.5",
@@ -54,6 +54,7 @@
     "assert": "^2.0.0",
     "buffer": "^6.0.3",
     "cpy-cli": "^5.0.0",
-    "cypress": "^12.17.1"
+    "cypress": "^12.17.1",
+    "@solid/community-server": "^6.0.1"
   }
 }
