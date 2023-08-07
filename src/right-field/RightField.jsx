@@ -92,7 +92,7 @@ function RightField(props) {
           {selectedQuery && (
             <strong id="query-name-label">{selectedQuery.name}</strong>
           )}
-          {selectedQuery && resultType !== "boolean" && (
+          {(selectedQuery && resultType !== "boolean") && (
             <div className="information-box">
               <label>
                 <strong>Result Count:</strong>
@@ -172,28 +172,22 @@ const adderFunctionMapper = {
   },
   boolean: (setter, query) => {
     let resultObject = query.askQuery;
-    return (result) =>
-      result ? setter(resultObject.trueText) : setter(resultObject.falseText);
+    return (result) => result ? setter(resultObject.trueText) : setter(resultObject.falseText);
   },
   quads: (setter) => {
     return ({ item }) => {
-      quadStreamAdder(item, setter);
+      quadStreamAdder(item, setter)
     };
-  },
+  }
 };
 
 /**
  * Processes a result entry as it should look in the result table, and adds it to the table entries
- * @param {Object} item The result entry that should be processed
- * @param {Function} setter function to set the table entries.
+ * @param {Object} item The result entry that should be processed 
+ * @param {Function} setter function to set the table entries. 
  */
 function quadStreamAdder(item, setter) {
-  const newValues = [
-    item.subject.value,
-    item.predicate.value,
-    item.object.value,
-    item.graph.value,
-  ];
+  const newValues = [item.subject.value, item.predicate.value, item.object.value, item.graph.value];
   setter((old) => {
     return [...old, newValues];
   });
@@ -211,9 +205,7 @@ function bindingStreamAdder(item, variables, setter) {
     const value = item.get(variable) ? item.get(variable) : "";
     const type = variable.split("_")[1];
     let componentCaller = typeRepresentationMapper[type];
-    componentCaller = componentCaller
-      ? componentCaller
-      : (text) => (text.id ? text.id : text.value);
+    componentCaller = componentCaller ? componentCaller : (text) => text.id ? text.id : text.value;
     newValues.push(componentCaller(value));
   }
 
@@ -258,10 +250,13 @@ async function fetchQuery(query, eventEmitter) {
 async function executeQuery(query, eventEmitter, resultAdder) {
   try {
     query.queryText = await fetchQuery(query, eventEmitter);
+    const fetchFunction = getDefaultSession().info.isLoggedIn
+      ? authFetch
+      : fetch;
     return handleQueryExecution(
       await myEngine.query(query.queryText, {
         sources: query.sources,
-        fetch: authenticationFetch,
+        fetch: fetchFunction,
       }),
       query,
       eventEmitter,
@@ -273,25 +268,6 @@ async function executeQuery(query, eventEmitter, resultAdder) {
 }
 
 /**
- * Tries to fetch a query onauthenticated, if it fails it tries to fetch it authenticated.
- * @param {String || URL} argument a URL or a string that should be fetched
- * @returns {Response} the response from the fetch
- */
-async function authenticationFetch(argument) {
-  let resultFetch
-  try{
-    resultFetch = await fetch(argument);
-    if (resultFetch.status === 401 || resultFetch.status === 403) {
-      resultFetch = await authFetch(argument)
-    }
-  }
-  catch(error){
-    resultFetch = await authFetch(argument)
-  }
-  return resultFetch
-}
-
-/**
  * A function that given a QueryType processes every result as a stream.
  *
  * @param {QueryType} execution a query execution
@@ -299,17 +275,11 @@ async function authenticationFetch(argument) {
  * @param {EventEmitter} eventEmitter an EventEmitter that listens to and emits UI state changes.
  * @param {Function} adder function that sets UI state of the query result
  */
-async function handleQueryExecution(
-  execution,
-  query,
-  eventEmitter,
-  resultAdder
-) {
+async function handleQueryExecution(execution, query, eventEmitter, resultAdder) {
   try {
     let variables;
     const resultType = execution.resultType;
-    const adder = (obj) =>
-      adderFunctionMapper[resultType](resultAdder, query)(obj);
+    const adder = (obj) => adderFunctionMapper[resultType](resultAdder, query)(obj);
 
     eventEmitter.emit("resultType", execution.resultType);
 
@@ -318,6 +288,7 @@ async function handleQueryExecution(
       variables = metadata.variables.map((val) => {
         return val.value;
       });
+
     }
 
     queryTypeHandlers[execution.resultType](
