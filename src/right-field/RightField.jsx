@@ -23,6 +23,10 @@ if (config.queryFolder.substring(config.queryFolder.length - 1) !== "/") {
 }
 
 const myEngine = new QueryEngine();
+let proxyHandler = undefined;
+if(config.httpProxy){
+  proxyHandler = new ProxyHandlerStatic(config.httpProxy);
+}
 let iterator = undefined;
 
 /**
@@ -258,7 +262,7 @@ async function executeQuery(query, eventEmitter, resultAdder) {
       await myEngine.query(query.queryText, {
         sources: query.sources,
         fetch: fetchFunction,
-        httpProxyHandler: new ProxyHandlerStatic(config.httpProxy),
+        httpProxyHandler: proxyHandler,
       }),
       query,
       eventEmitter,
