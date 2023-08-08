@@ -26,6 +26,23 @@ describe('Web app', () => {
         cy.contains('Something went wrong while preparing the query.')
     })
 
+    it('Querying resource with "bad" cors header, though a proxy should work', () => {
+        cy.visit('/')
+        cy.get('input[name="idp"]').clear().type('http://localhost:8080')
+        cy.contains('Login').click()
+
+        cy.get('input#email').type('hello@example.com');
+        cy.get('input#password').type('abc123');
+        cy.contains('button', 'Log in').click();
+        cy.contains('button', 'Authorize').click();
+
+        cy.contains('Logged in as:')
+
+        cy.contains('Test query').click()
+        cy.get('.gridjs').find('tr')
+
+    })
+
     it("Query public data", () => {
         cy.visit('/')
         
