@@ -274,6 +274,9 @@ async function executeQuery(query, eventEmitter, resultAdder) {
       resultAdder
     );
   } catch (error) {
+    for(let source of query.sources){
+      myEngine.invalidateHttpCache(source);
+    }
     handleQueryFail(error, eventEmitter);
   }
 }
