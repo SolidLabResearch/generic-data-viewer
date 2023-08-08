@@ -258,11 +258,16 @@ async function executeQuery(query, eventEmitter, resultAdder) {
     const fetchFunction = getDefaultSession().info.isLoggedIn
       ? authFetch
       : fetch;
+    
+    let queryProxyHandler
+    if(query.useProxy){
+      queryProxyHandler = proxyHandler
+    }
     return handleQueryExecution(
       await myEngine.query(query.queryText, {
         sources: query.sources,
         fetch: fetchFunction,
-        httpProxyHandler: proxyHandler,
+        httpProxyHandler: queryProxyHandler,
       }),
       query,
       eventEmitter,
