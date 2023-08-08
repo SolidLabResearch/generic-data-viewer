@@ -62,7 +62,7 @@ The configuration file follows a simple structure.
             "description": "Description of the query",
             "id": "A unique ID for the query",
             "sources": "Sources over which the query should be executed",
-            "useProxy": "True or false, whether the query should be executed through the proxy or not.",
+            "useProxy": "True or false, whether the query should be executed through the proxy or not. This field is optional and defaults to false.",
             "askQuery": {
                 "trueText": "The text that is to be shown when the query result is true, only useful for ASK queries.",
                 "falseText": "The text that is to be shown when the query result is true, only useful for ASK queries."
