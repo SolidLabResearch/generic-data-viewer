@@ -176,12 +176,12 @@ To run all the tests you can execute the following:
    npm start
    ```
    Also keep this process running.
-4. Start the http proxy
+3. Start the http proxy
    ```bash
    npm run start:proxy
    ```
    This process must also be active throughout the tests.
-3. Finally, you can execute the tests by running
+4. Finally, you can execute the tests by running
    ```bash
    npm test
    ```
