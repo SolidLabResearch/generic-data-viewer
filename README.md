@@ -62,6 +62,7 @@ The configuration file follows a simple structure.
             "description": "Description of the query",
             "id": "A unique ID for the query",
             "sources": "Sources over which the query should be executed",
+            "useProxy": "True or false, whether the query should be executed through the proxy or not. This field is optional and defaults to false.",
             "askQuery": {
                 "trueText": "The text that is to be shown when the query result is true, only useful for ASK queries.",
                 "falseText": "The text that is to be shown when the query result is true, only useful for ASK queries."
@@ -146,6 +147,16 @@ To create a local pod with which you can test for example authentication you can
 - Log in with the IDP `http://localhost:8080` and
   the credentials in the file `seeded-pod-config.json`.
 
+## Using a local http proxy 
+
+To use a local http proxy through which the requests will be rerouted execute the following command:
+
+```bash
+npm run start:proxy
+```
+
+which will start a proxy on port `8000`.
+
 ## Testing
 
 For testing we use [Cypress](https://www.cypress.io/) and [React-Jest](https://jestjs.io/docs/tutorial-react).
@@ -165,7 +176,12 @@ To run all the tests you can execute the following:
    npm start
    ```
    Also keep this process running.
-3. Finally, you can execute the tests by running
+3. Start the http proxy
+   ```bash
+   npm run start:proxy
+   ```
+   This process must also be active throughout the tests.
+4. Finally, you can execute the tests by running
    ```bash
    npm test
    ```
